@@ -1,4 +1,4 @@
-class PagesController < ApplicationController
+class PagesController < InertiaController
   def home
     # Fetches your newly seeded database partners perfectly
     @featured_horses = Horse.where(featured: true, deceased: false).limit(2)

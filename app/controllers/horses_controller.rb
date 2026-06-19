@@ -1,4 +1,5 @@
-class HorsesController < ApplicationController
+class HorsesController < InertiaController
+  before_action :authenticate_user!, except: [:index, :show]
   before_action :set_horse, only: %i[ show edit update destroy ]
 
   # GET /horses or /horses.json
