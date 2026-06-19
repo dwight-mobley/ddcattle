@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/typography';
+@plugin '@tailwindcss/forms';
+
+@theme {
+  /* Earthy, rugged tones built for a mustang ranch */
+  --color-brand-dark: #1e1b18;      /* Deep iron / charcoal */
+  --color-brand-tan: #dfd5c6;       /* Dusty sand / light canvas */
+  --color-brand-clay: #a65b32;      /* Rich terracotta / warm leather */
+  --color-brand-sage: #5f6b5e;      /* High-desert brush / olive sage */
+  --color-brand-cream: #fbf9f5;     /* Crisp, clean off-white background */
+
+  /* Typography suited for a classic but modern western feel */
+  --font-display: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+}
