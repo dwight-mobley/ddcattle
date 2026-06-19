@@ -208,13 +208,14 @@ horses_data = [
     height: nil
   }
 ]
+Horse. transaction do
+  Horse.destroy_all
+  horses_data.each do |data|
+    # 1. Use .new instead of .create so Rails doesn't hit the DB prematurely
+    horse = Horse.new
 
-horses_data.each do |data|
-  # Look up by the explicit seed ID
-  Horse.create() do |horse|
-
-    # Assign the ID explicitly along with core attributes
-    
+    # 2. Assign the ID explicitly along with core attributes
+    horse.id = SecureRandom.uuid
     horse.name = data[:name]
     horse.breed = data[:breed]
     horse.brand = data[:brand]
@@ -234,8 +235,15 @@ horses_data.each do |data|
     # Approximate birth year safely
     horse.birthdate = data[:foal_year] ? Date.new(data[:foal_year], 1, 1) : nil
 
+    # 3. Save exactly once. This will throw an error if any validations fail.
     horse.save!
   end
 end
-
 puts "Successfully rounded up #{Horse.count} horses into the database!"
+
+puts "Saddling up... Seeding user data..."
+User.create!(
+  username: "admin",
+  password: "password123",
+)
+puts "Successfully created #{User.count} user(s) in the database!"
