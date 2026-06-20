@@ -11,7 +11,9 @@ class HorsesController < InertiaController
 
   # GET /horses/1 or /horses/1.json
   def show
-    render inertia: "Horses/Show", props: { horse: @horse.as_json }
+    @horse = Horse.find(params[:id])
+    render inertia: "Horses/Show",
+    props: { horse: @horse.as_json   }
   end
 
   # GET /horses/new

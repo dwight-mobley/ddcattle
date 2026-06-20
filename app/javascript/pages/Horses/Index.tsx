@@ -38,7 +38,7 @@ export default function HorseIndex({ horses }: Props) {
               : 'bg-white text-brand-dark border border-brand-tan hover:bg-gray-50'
               }`}
           >
-            All Mustangs
+            All Horses
           </button>
           <button
             onClick={() => setFilterForSale(true)}
@@ -131,7 +131,7 @@ export default function HorseIndex({ horses }: Props) {
                   </div>
 
                   <Link
-                    href={`/mustangs/${horse.id}`}
+                    href={`/horses/${horse.id}`}
                     className="inline-flex items-center text-sm font-medium text-brand-clay hover:text-brand-dark transition-colors"
                   >
                     View Details
