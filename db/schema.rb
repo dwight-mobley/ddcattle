@@ -10,21 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_19_095236) do
-  create_table "horses", force: :cascade do |t|
+ActiveRecord::Schema[8.0].define(version: 2026_06_19_205726) do
+  create_table "horses", id: :string, force: :cascade do |t|
     t.string "name", null: false
     t.string "breed", default: "Mustang", null: false
+    t.string "color"
+    t.string "sex"
     t.string "brand"
     t.date "birthdate"
     t.string "herd_management_area"
     t.integer "price"
     t.boolean "featured", default: false, null: false
     t.text "description"
-    t.json "images", default: []
+    t.json "images", default: [], null: false
     t.boolean "deceased", default: false, null: false
     t.integer "weight"
     t.decimal "height", precision: 3, scale: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "username", null: false
+    t.string "password_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 end

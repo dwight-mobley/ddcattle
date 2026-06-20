@@ -2,15 +2,16 @@ import React, { ReactNode, useState } from 'react';
 import { Horse } from '@/types';
 import { formatHorsePrice, isForSale } from '@/utils/horseHelpers';
 import Layout from '@/components/layout/Layout';
+import { Link, usePage } from '@inertiajs/react';
 
 interface Props {
   horses: Horse[];
 }
 
 export default function HorseIndex({ horses }: Props) {
+  const { auth } = usePage().props
   // Simple filter state so users can toggle between all horses vs only those for sale
   const [filterForSale, setFilterForSale] = useState<boolean>(false);
- 
 
   // Filter out deceased horses first, then apply "For Sale" filter if active
   const activeHorses = horses
@@ -32,24 +33,30 @@ export default function HorseIndex({ horses }: Props) {
         <div className="mt-8 flex gap-3">
           <button
             onClick={() => setFilterForSale(false)}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              !filterForSale
-                ? 'bg-brand-dark text-brand-cream shadow-xs'
-                : 'bg-white text-brand-dark border border-brand-tan hover:bg-gray-50'
-            }`}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${!filterForSale
+              ? 'bg-brand-dark text-brand-cream shadow-xs'
+              : 'bg-white text-brand-dark border border-brand-tan hover:bg-gray-50'
+              }`}
           >
-            All Mustangs
+            All Horses
           </button>
           <button
             onClick={() => setFilterForSale(true)}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              filterForSale
-                ? 'bg-brand-clay text-brand-cream shadow-xs'
-                : 'bg-white text-brand-dark border border-brand-tan hover:bg-gray-50'
-            }`}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${filterForSale
+              ? 'bg-brand-clay text-brand-cream shadow-xs'
+              : 'bg-white text-brand-dark border border-brand-tan hover:bg-gray-50'
+              }`}
           >
             Available For Sale
           </button>
+          {auth?.user &&
+            <Link
+              href="/horses/new"
+              className={`px-4 py-2 rounded-md text-sm font-medium bg-green-600 text-white`}
+            >
+              + Add New
+            </Link>
+          }
         </div>
       </div>
 
@@ -91,13 +98,16 @@ export default function HorseIndex({ horses }: Props) {
               {/* Content Block */}
               <div className="p-6 flex-grow flex flex-col justify-between space-y-4">
                 <div>
-                  <div className="flex justify-between items-baseline mb-1">
+                  <div className="flex justify-between items-baseline mb-1 gap-3">
                     <h2 className="font-display text-2xl font-bold tracking-tight text-brand-dark">
                       {horse.name}
                     </h2>
                     <span className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
                       Age {horse.foal_year ? (new Date().getFullYear() - horse.foal_year) : 'Unknown'}
                     </span>
+                    {auth.user &&
+                      <Link href={`/horses/${horse.id}/edit`} className='text-xs font-mono bg-yellow-100 text-gray-600 px-2 py-0.5 rounded'>Edit</Link>
+                    }
                   </div>
 
                   {/* Subtitle Details */}
@@ -120,16 +130,21 @@ export default function HorseIndex({ horses }: Props) {
                     </span>
                   </div>
 
-                  <a
-                    href={`/mustangs/${horse.id}`}
+                  <Link
+                    href={`/horses/${horse.id}`}
                     className="inline-flex items-center text-sm font-medium text-brand-clay hover:text-brand-dark transition-colors"
                   >
                     View Details
                     <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                     </svg>
-                  </a>
+                  </Link>
                 </div>
+                {auth.user &&
+                  <div>
+                    <Link href={`/horses/${horse.id}`} method="delete" className='bg-red-600 text-white p-3 rounded'>Delete</Link>
+                  </div>
+                }
               </div>
             </div>
           ))}

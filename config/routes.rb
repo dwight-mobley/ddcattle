@@ -6,7 +6,13 @@ Rails.application.routes.draw do
     get "(*path)", to: redirect { |params, req| "#{req.protocol}localhost:#{req.port}/#{params[:path]}" }
   end
   root 'pages#home'
+
   resources :horses
+
+  # Auth
+  get "login" => "sessions#new", as: :login
+  post "login" => "sessions#create"
+  delete "logout" => "sessions#destroy", as: :logout
 
   get "up" => "rails/health#show", as: :rails_health_check
 end
