@@ -1,5 +1,6 @@
 class HorsesController < InertiaController
   before_action :set_horse, only: %i[ show edit update destroy ]
+  before_action :require_login, only: %i[ new create edit update destroy ]
 
   # GET /horses or /horses.json
   def index
