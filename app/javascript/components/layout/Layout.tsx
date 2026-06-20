@@ -36,7 +36,7 @@ const showFailure = (message:string) => {
 };
 
   useEffect(() => {
-    if(flash?.notice) showSuccess(flash.notice);
+    if(flash?.notice) showSuccess(flash.notice.message);
     if(flash?.alert) showFailure(flash.alert.message);
   }, [flash?.notice, flash?.alert])
 

@@ -1,5 +1,4 @@
 class HorsesController < InertiaController
-  before_action :authenticate_user!, except: [:index, :show]
   before_action :set_horse, only: %i[ show edit update destroy ]
 
   # GET /horses or /horses.json
@@ -11,53 +10,44 @@ class HorsesController < InertiaController
 
   # GET /horses/1 or /horses/1.json
   def show
+    render inertia: "Horses/Show", props: { horse: @horse.as_json }
   end
 
   # GET /horses/new
   def new
     @horse = Horse.new
+    render inertia: "Horses/NewEdit", props: { horse: @horse.as_json }
   end
 
   # GET /horses/1/edit
   def edit
+    render inertia: "Horses/NewEdit", props: { horse: @horse.as_json }
   end
 
   # POST /horses or /horses.json
   def create
     @horse = Horse.new(horse_params)
-
-    respond_to do |format|
-      if @horse.save
-        format.html { redirect_to @horse, notice: "Horse was successfully created." }
-        format.json { render :show, status: :created, location: @horse }
-      else
-        format.html { render :new, status: :unprocessable_content }
-        format.json { render json: @horse.errors, status: :unprocessable_content }
-      end
+    @horse.id = SecureRandom.uuid
+    if @horse.save
+      redirect_to horses_path, notice: { message: "Horse was successfully created.", id: Time.now.to_i }, status: :see_other
+    else
+      redirect_to new_horse_path, alert: { message: @horse.errors.full_messages.join(", "), id: Time.now.to_i }
     end
   end
 
   # PATCH/PUT /horses/1 or /horses/1.json
   def update
-    respond_to do |format|
       if @horse.update(horse_params)
-        format.html { redirect_to @horse, notice: "Horse was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @horse }
+      redirect_to horses_path, notice: { message: "Horse was successfully updated.", id: Time.now.to_i }, status: :see_other
       else
-        format.html { render :edit, status: :unprocessable_content }
-        format.json { render json: @horse.errors, status: :unprocessable_content }
+        redirect_to edit_horse_path, alert: { message: @horse.errors.full_messages.join(", "), id: Time.now.to_i }
       end
-    end
   end
 
   # DELETE /horses/1 or /horses/1.json
   def destroy
     @horse.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to horses_path, notice: "Horse was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
+    redirect_to horses_path, notice: { message: "Horse was successfully destroyed.", id: Time.now.to_i }, status: :see_other
   end
 
   private
@@ -68,6 +58,7 @@ class HorsesController < InertiaController
 
     # Only allow a list of trusted parameters through.
     def horse_params
-      params.fetch(:horse, {})
+      permitted_fields = Horse.column_names - [ "id", "created_at", "updated_at" ]
+      params.require(:horse).permit(*permitted_fields)
     end
 end
