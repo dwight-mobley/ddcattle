@@ -1,4 +1,4 @@
-class SessionsController < ApplicationController
+class SessionsController < InertiaController
   def new
     render inertia: "Auth/Login"
   end
@@ -8,10 +8,10 @@ class SessionsController < ApplicationController
 
     if @user&.authenticate(params[:password])
       session[:user_id] = @user.id
-        redirect_to "/", notice: "Signed in successfully."
+        redirect_to(root_path, notice: "Signed in successfully.")
+
     else
-      flash.now[:alert] = "Invalid username or password"
-      render :new, status: :unprocessable_entity
+        redirect_to(login_path, alert: {message: "Invalid username or password", id: Time.now.to_i})
     end
   end
 

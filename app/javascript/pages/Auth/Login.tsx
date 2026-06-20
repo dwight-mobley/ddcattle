@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import Layout from "@/components/layout/Layout";
 
 export default function Login() {
   const { flash } = usePage<{ flash?: { alert?: string; notice?: string } }>().props;
-  const {data, setData, post, errors} = useForm({
+  const {data, setData, post} = useForm({
     username:'',
     password: ''
   })
@@ -28,9 +28,9 @@ export default function Login() {
             </p>
           </div>
 
-          {flash?.alert && (
+          {flash?.alert?.message && (
             <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {flash.alert}
+              {flash.alert.message}
             </div>
           )}
 

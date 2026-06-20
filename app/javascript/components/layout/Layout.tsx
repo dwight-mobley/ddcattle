@@ -1,5 +1,6 @@
-import React, { useState, ReactNode } from 'react';
-import { Link } from '@inertiajs/react';
+import React, { useState, ReactNode, useEffect } from 'react';
+import { Link, usePage } from '@inertiajs/react';
+import { ToastContainer, toast } from 'react-toastify';
 
 interface LayoutProps {
   children: ReactNode;
@@ -7,6 +8,38 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { auth, flash } = usePage().props;
+  const user = auth?.user;
+
+
+  const showSuccess = (message:string) => {
+  toast.success(message, {
+    style: {
+      background: '#ecfdf5',    // Light green background
+      color: '#065f46',           // Dark green text
+      border: '1px solid #a7f3d0',
+      borderRadius: '8px',
+    },
+
+  });
+};
+
+const showFailure = (message:string) => {
+  toast.error(message, {
+    style: {
+      background: '#fef2f2',    // Light red background
+      color: '#991b1b',           // Dark red text
+      border: '1px solid #fecaca',
+      borderRadius: '8px',
+    },
+  });
+};
+
+  useEffect(() => {
+    if(flash?.notice) showSuccess(flash.notice);
+    if(flash?.alert) showFailure(flash.alert.message);
+  }, [flash?.notice, flash?.alert])
+
 
   return (
     <div className="min-h-screen bg-brand-cream text-brand-dark font-sans flex flex-col">
@@ -30,6 +63,12 @@ export default function Layout({ children }: LayoutProps) {
               <Link href="/contact" className="ml-4 bg-brand-clay hover:bg-opacity-95 text-brand-cream text-sm font-medium px-5 py-2.5 rounded-md transition-all shadow-xs">
                 Get in Touch
               </Link>
+              {user &&
+                <>
+                  <span>Welcome, {user.username}</span>
+                  <Link href={'/logout'} method='delete'>Logout</Link>
+                </>
+              }
             </div>
 
             {/* Mobile menu button */}
@@ -74,6 +113,7 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Main Page Content Container */}
       <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {flash && <ToastContainer autoClose={1500} />}
         {children}
       </main>
 
