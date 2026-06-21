@@ -144,7 +144,7 @@ export default function NewEdit({ horse }: Props) {
                                 <label className="block text-sm font-medium text-brand-dark mb-2">Birth Date</label>
                                 <input
                                     type="date"
-                                    value={data.birthdate}
+                                    value={data.birthdate as string}
                                     onChange={(e) => setData('birthdate', e.target.value)}
                                     className="w-full px-4 py-2 rounded-lg border border-brand-tan/50 focus:border-brand-clay focus:ring-2 focus:ring-brand-clay/20 outline-none"
                                 />
