@@ -4,8 +4,9 @@ import { formatHorsePrice, isForSale } from '@/utils/horseHelpers';
 import Layout from '@/components/layout/Layout';
 import { Link, usePage } from '@inertiajs/react';
 
+type GridHorse = Horse & {profile_image_url : string}
 interface Props {
-  horses: Horse[];
+  horses: GridHorse[];
 }
 
 export default function HorseIndex({ horses }: Props) {
@@ -75,9 +76,9 @@ export default function HorseIndex({ horses }: Props) {
             >
               {/* Image Window */}
               <div className="h-64 bg-brand-tan relative overflow-hidden">
-                {horse.images && horse.images.length > 0 ? (
+                {horse.profile_image_url  ? (
                   <img
-                    src={horse.images[0].url}
+                    src={horse.profile_image_url}
                     alt={horse.name}
                     className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
                   />

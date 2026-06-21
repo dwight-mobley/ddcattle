@@ -5,11 +5,11 @@ class HorsesController < InertiaController
   # GET /horses or /horses.json
   def index
     @horses = Horse.all.order(:name).with_attached_images
-    horses_with_urls = @horses.map do |horse|
-      horse.serializable_hash_for_view
+    horses_with_profile_image = @horses.map do |horse|
+      horse.serializable_hash_for_grid
     end
     render inertia: "Horses/Index",
-    props: { horses: horses_with_urls }
+    props: { horses: horses_with_profile_image }
   end
 
   # GET /horses/1 or /horses/1.json
