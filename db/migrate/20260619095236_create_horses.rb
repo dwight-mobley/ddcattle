@@ -1,6 +1,6 @@
 class CreateHorses < ActiveRecord::Migration[8.0]
   def change
-    create_table :horses, id: :string do |t|
+    create_table :horses, id: :uuid do |t|
       t.string :name, null: false
       t.string :breed, null: false, default: 'Mustang'
       t.string :color

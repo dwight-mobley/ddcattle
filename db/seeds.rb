@@ -240,9 +240,11 @@ Horse. transaction do
 end
 puts "Successfully rounded up #{Horse.count} horses into the database!"
 
-puts "Saddling up... Seeding user data..."
-User.create!(
-  username: "admin",
-  password: "password123",
-)
-puts "Successfully created #{User.count} user(s) in the database!"
+unless User.exists?(username: "admin")
+  puts "Saddling up... Seeding user data..."
+  User.create!(
+    username: "admin",
+    password: "password123",
+  )
+  puts "Successfully created #{User.count} user(s) in the database!"
+end
