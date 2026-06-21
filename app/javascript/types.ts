@@ -1,9 +1,16 @@
+type HorseImage = {
+  id:number;
+  url: string;
+};
+
 export type HorseBreed =
   | 'Mustang'
   | 'Quarter Horse'
   | 'Paint Horse'
   | 'Burro'
   | 'Halflinger';
+
+
 
 export interface Horse {
   id: string; // Switched to string to handle your native UUIDs
@@ -17,8 +24,10 @@ export interface Horse {
   price: number | null;               // Stored in cents. null = Not for sale
   featured: boolean;
   description: string | null;
-  images: string[];                   // Unified structure string array
+  images: HorseImage[];
   deceased: boolean;
   weight: number | null;
   height: number | null;
 }
+
+export type HorseFormPayload = Omit<Horse, 'id' | 'images'> & { images: File[] };

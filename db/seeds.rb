@@ -223,7 +223,6 @@ Horse. transaction do
     horse.price = data[:price]
     horse.featured = data[:featured]
     horse.description = data[:description]
-    horse.images = data[:images]
     horse.deceased = data[:deceased] || false
     horse.weight = data[:weight]
     horse.height = data[:height]

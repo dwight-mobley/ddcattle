@@ -11,7 +11,6 @@ class CreateHorses < ActiveRecord::Migration[8.0]
       t.integer :price
       t.boolean :featured, default: false, null: false
       t.text :description
-      t.json :images, default: [], null: false
       t.boolean :deceased, default: false, null: false
       t.integer :weight
       t.decimal :height, precision: 3, scale: 1

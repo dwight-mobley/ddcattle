@@ -8,9 +8,20 @@ interface Props {
 }
 
 export default function Show({ horse }: Props) {
+    console.log(horse)
     const { auth } = usePage().props;
     const isLoggedIn = auth?.logged_in;
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+    const handleDeleteImage = (imageId: number) => {
+        if (confirm('Are you sure you want to permanently delete this photo from the gallery?')) {
+            // Sends request to our custom Rails member route with the target attachment ID
+            router.delete(`/horses/${horse.id}/delete_image`, {
+                data: { image_id: imageId },
+                preserveScroll: true // Keeps the browser window positioned right where it is
+            });
+        }
+    };
 
     const handleDelete = () => {
         if (confirm(`Are you sure you want to delete ${horse.name}?`)) {
@@ -37,11 +48,22 @@ export default function Show({ horse }: Props) {
                     <div className="lg:col-span-2">
                         <div className="bg-brand-tan rounded-xl overflow-hidden aspect-4/3 relative">
                             {currentImage ? (
-                                <img
-                                    src={currentImage}
-                                    alt={horse.name}
-                                    className="w-full h-full object-cover"
-                                />
+                                <div>
+                                    <img
+                                        src={currentImage?.url}
+                                        alt={horse.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    {/* Deletion Button Layout - Only visible if logged in */}
+                                    {isLoggedIn && (
+                                        <button
+                                            onClick={() => handleDeleteImage(currentImage?.id)}
+                                            className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs px-2.5 py-1.5 rounded-md shadow-lg transition-colors cursor-pointer"
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
+                                </div>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-brand-sage/20 text-brand-sage font-display text-3xl italic font-semibold">
                                     {horse.name}
@@ -75,7 +97,7 @@ export default function Show({ horse }: Props) {
                                             : 'border-transparent hover:border-brand-tan'
                                             }`}
                                     >
-                                        <img src={image} alt={`${horse.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                                        <img src={image.url} alt={`${horse.name} ${idx + 1}`} className="w-full h-full object-cover" />
                                     </button>
                                 ))}
                             </div>

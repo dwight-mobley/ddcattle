@@ -65,3 +65,9 @@ end
 gem "inertia_rails", "~> 3.21"
 
 gem "vite_rails", "~> 3.11"
+
+gem "aws-sdk-s3", require: false
+
+gem "image_processing", "~> 1.2"
+
+gem "dotenv-rails", groups: [ :development, :test ]
