@@ -10,6 +10,7 @@ interface Props {
 
 export default function HorseIndex({ horses }: Props) {
   const { auth } = usePage().props
+
   // Simple filter state so users can toggle between all horses vs only those for sale
   const [filterForSale, setFilterForSale] = useState<boolean>(false);
 
@@ -103,7 +104,7 @@ export default function HorseIndex({ horses }: Props) {
                       {horse.name}
                     </h2>
                     <span className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-                      Age {horse.foal_year ? (new Date().getFullYear() - horse.foal_year) : 'Unknown'}
+                      Age {horse?.age || 'Unknown'}
                     </span>
                     {auth.user &&
                       <Link href={`/horses/${horse.id}/edit`} className='text-xs font-mono bg-yellow-100 text-gray-600 px-2 py-0.5 rounded'>Edit</Link>

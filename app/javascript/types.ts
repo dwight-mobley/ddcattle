@@ -15,11 +15,12 @@ export type HorseBreed =
 
 export interface Horse {
   id: string; // Switched to string to handle your native UUIDs
+  age: number | null; 
   name: string;
   breed: HorseBreed;
   color: string;
   sex: 'GELDING' | 'MARE';
-  foal_year: number;
+  birthdate: Date | null;
   brand: string | null;
   herd_management_area: string | null; // Unified parameter name
   price: number | null;               // Stored in cents. null = Not for sale
