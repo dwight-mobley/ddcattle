@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import Layout from '@/components/layout/Layout';
 import { Horse } from '@/types';
 import CarouselImage from '@/components/CarouselImage'
 interface Props {
     horse: Horse;
+    images: { id: number, url: string }[]
+    imagesPagination: { next: number | null; prev: number | null; count: number }
 }
 
-export default function Show({ horse }: Props) {
-    console.log(horse)
+export default function Show({ horse, images: initialImages, imagesPagination }: Props) {
+    
     const { auth } = usePage().props;
     const isLoggedIn = auth?.logged_in;
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [images, setImages] = useState(initialImages)
 
     const handleDeleteImage = (imageId: number) => {
         if (confirm('Are you sure you want to permanently delete this photo from the gallery?')) {
@@ -29,8 +32,24 @@ export default function Show({ horse }: Props) {
         }
     };
 
-    const currentImage = horse.images?.[selectedImageIndex];
-    const age = horse.foal_year ? new Date().getFullYear() - horse.foal_year : null;
+    const currentImage = images?.[selectedImageIndex];
+
+    const loadMoreImages = (pageNumber: number) => {
+        router.get(
+            `/horses/${horse.id}`,
+            { page: pageNumber },
+            {
+                preserveState: true,
+                only: ['images', 'imagesPagination'],
+                onSuccess: (d)=>{
+                    console.log(d)
+                    setImages((prev)=>[...prev, ...d.props.images])
+                }
+            }
+        );
+    };
+
+
 
     return (
         <>
@@ -53,7 +72,7 @@ export default function Show({ horse }: Props) {
                                         src={currentImage?.url}
                                         alt={horse.name}
                                         loading="lazy"
-                                        className="w-full h-full object-contain sm:object-cover select-none max-w-full max-h-full"
+                                        className="w-full h-full  object-contain select-none max-w-full max-h-full"
                                     />
                                     {/* Deletion Button Layout - Only visible if logged in */}
                                     {isLoggedIn && (
@@ -87,12 +106,13 @@ export default function Show({ horse }: Props) {
                         </div>
 
                         {/* Thumbnail Navigation */}
-                        {horse.images && horse.images.length > 1 && (
+                        {images && images.length > 1 && (
                             <div className="">
-                                <div className='rounded bg-green-600 text-white border p-1 w-10 h-8 text-center'>{horse.images.length}</div>
+                                <div className='rounded bg-green-600 text-white border p-1 w-10 h-8 text-center'>{imagesPagination.count}</div>
                                 {/* Scrollable Container Container */}
                                 <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-gray-300 scroll-smooth snap-x">
-                                    {horse.images.map((image, idx) => (
+
+                                    {images.map((image, idx) => (
                                         <button
                                             key={image.id || idx}
                                             onClick={() => setSelectedImageIndex(idx)}
@@ -102,9 +122,18 @@ export default function Show({ horse }: Props) {
                                                 }`}
                                         >
                                             {/* Handles individual cloud loading and skeleton placeholders */}
-                                            <CarouselImage src={image.thumbnail_url} alt={`${horse.name} thumbnail ${idx + 1}`} />
+                                            <CarouselImage src={image.url} alt={`${horse.name} thumbnail ${idx + 1}`} />
                                         </button>
                                     ))}
+                                    {imagesPagination.next && (
+                                        <button onClick={() => loadMoreImages(imagesPagination.next!)}
+                                            className={`flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200
+                                                bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm"`}>
+                                            <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -130,10 +159,10 @@ export default function Show({ horse }: Props) {
 
                         {/* Quick Stats */}
                         <div className="bg-white border border-brand-tan rounded-xl p-6 space-y-4">
-                            {age !== null && (
+                            {horse.age !== null && (
                                 <div>
                                     <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold">Age</p>
-                                    <p className="text-lg font-semibold text-brand-dark">{age} years</p>
+                                    <p className="text-lg font-semibold text-brand-dark">{horse.age} years</p>
                                 </div>
                             )}
 
