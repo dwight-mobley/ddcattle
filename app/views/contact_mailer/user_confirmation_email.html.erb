@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    <style>
+      body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        background-color: #fbf9f5; /* brand-cream */
+        color: #1e1b18; /* brand-dark */
+        margin: 0;
+        padding: 20px;
+      }
+      .wrapper {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+        border: 1px solid #dfd5c6; /* brand-tan */
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      }
+      .header {
+        background-color: #1e1b18; /* brand-dark */
+        padding: 35px 30px;
+        text-align: center;
+      }
+      .header h1 {
+        color: #fbf9f5;
+        margin: 0;
+        font-size: 26px;
+        letter-spacing: 1px;
+        font-weight: 700;
+      }
+      .content {
+        padding: 40px 30px;
+        line-height: 1.6;
+        font-size: 15px;
+      }
+      .content p {
+        margin: 0 0 20px 0;
+        color: #1e1b18;
+      }
+      .highlight-box {
+        background-color: #fbf9f5;
+        border-left: 4px solid #5f6b5e; /* brand-sage */
+        padding: 20px;
+        margin: 25px 0;
+        border-radius: 0 4px 4px 0;
+      }
+      .highlight-box h3 {
+        margin: 0 0 8px 0;
+        color: #a65b32; /* brand-clay */
+        font-size: 16px;
+      }
+      .highlight-box p {
+        margin: 0;
+        font-size: 14px;
+        color: #5f6b5e;
+      }
+      .signature {
+        margin-top: 30px;
+        font-weight: 600;
+        color: #1e1b18;
+      }
+      .footer {
+        background-color: #dfd5c6; /* brand-tan */
+        padding: 20px;
+        text-align: center;
+        font-size: 11px;
+        color: #5f6b5e;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="header">
+        <h1>DD Cattle Company</h1>
+      </div>
+
+      <div class="content">
+        <p>Hello <%= @name %>,</p>
+
+        <p>Thank you for reaching out to DD Cattle Company. We wanted to drop you a quick note to let you know that we have successfully received your inquiry sent through our website contact form.</p>
+
+        <div class="highlight-box">
+          <h3>What Happens Next?</h3>
+          <p>Our team reviews all inquiries individually. Whether you are asking about our Mustang training programs, current horse strings for sale, or custom cattle operations, we make it a priority to get back to you with an honest, thorough answer within 24 to 48 business hours.</p>
+        </div>
+
+        <p>If your request is urgent, feel free to reply directly to this email to add any additional context or details.</p>
+
+        <p>We appreciate your interest in our program and look forward to speaking with you soon.</p>
+
+        <div class="signature">
+          The DD Cattle Co. Team
+        </div>
+      </div>
+
+      <div class="footer">
+        &copy; 2026 DD Cattle Company. All rights reserved.<br>
+        North Georgia's premier destination for Mustang training.
+      </div>
+    </div>
+  </body>
+</html>

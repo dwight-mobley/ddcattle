@@ -1,11 +1,9 @@
 Rails.application.routes.draw do
-
-
   # Redirect to localhost from 127.0.0.1 to use same IP address with Vite server
   constraints(host: "127.0.0.1") do
     get "(*path)", to: redirect { |params, req| "#{req.protocol}localhost:#{req.port}/#{params[:path]}" }
   end
-  root 'pages#home'
+  root "pages#home"
 
   resources :horses do
       member do
@@ -13,6 +11,10 @@ Rails.application.routes.draw do
       delete :delete_image
     end
   end
+
+  # Contact
+  get "contact", to: "contacts#index"
+  post "contact", to: "contacts#create"
 
   # Auth
   get "login" => "sessions#new", as: :login
