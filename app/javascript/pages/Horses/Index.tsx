@@ -3,13 +3,21 @@ import { Horse } from '@/types';
 import { formatHorsePrice, isForSale } from '@/utils/horseHelpers';
 import Layout from '@/components/layout/Layout';
 import { Link, usePage } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 
 type GridHorse = Horse & {profile_image_url : string}
 interface Props {
   horses: GridHorse[];
+  pagination: {
+    current: number;
+    next: number | null;
+    prev: number | null;
+    count: number
+    pages: number
+  }
 }
 
-export default function HorseIndex({ horses }: Props) {
+export default function HorseIndex({ horses, pagination }: Props) {
   const { auth } = usePage().props
 
   // Simple filter state so users can toggle between all horses vs only those for sale
@@ -17,11 +25,16 @@ export default function HorseIndex({ horses }: Props) {
 
   // Filter out deceased horses first, then apply "For Sale" filter if active
   const activeHorses = horses
-    .filter(horse => !horse.deceased)
     .filter(horse => !filterForSale || isForSale(horse));
 
+  const fetchPage = (pageNumber: number | null) => {
+    if (pageNumber) {
+      router.get(window.location.pathname, { page: pageNumber });
+    }
+  };
+
   return (
-    <>
+    <div className='max-w-8xl'>
       {/* Hero Header */}
       <div className="mb-12 border-b border-brand-tan pb-8">
         <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight mb-4">
@@ -68,7 +81,7 @@ export default function HorseIndex({ horses }: Props) {
           <p className="text-gray-500 font-medium">No horses currently match this criteria.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
           {activeHorses.map((horse) => (
             <div
               key={horse.id}
@@ -148,11 +161,45 @@ export default function HorseIndex({ horses }: Props) {
                   </div>
                 }
               </div>
+
             </div>
+
           ))}
         </div>
+
+
       )}
-    </>
+    <div className="pagination-controls flex items-center justify-between mt-6 border-t pt-4">
+
+        {/* Left Side: Contextual Info using the new props */}
+        <div className="text-sm text-gray-600">
+          <p>
+            Page <span className="font-semibold">{pagination.current}</span> of <span className="font-semibold">{pagination.pages}</span>
+            <span className="ml-2 text-gray-400">({pagination.count} total records)</span>
+          </p>
+        </div>
+
+        {/* Right Side: Navigation Buttons */}
+        <div className="flex gap-2">
+          <button
+            disabled={!pagination.prev}
+            onClick={() => fetchPage(pagination.prev)}
+            className="px-4 py-2 border rounded bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            &larr; Previous
+          </button>
+
+          <button
+            disabled={!pagination.next}
+            onClick={() => fetchPage(pagination.next)}
+            className="px-4 py-2 border rounded bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next &rarr;
+          </button>
+        </div>
+
+      </div>
+    </div>
   );
 }
 

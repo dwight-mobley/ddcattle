@@ -75,3 +75,5 @@ gem "image_processing", "~> 1.2"
 gem "dotenv-rails", groups: [ :development, :test ]
 
 gem "resend"
+
+gem 'pagy', '~> 43.5'

@@ -1,15 +1,20 @@
 class HorsesController < InertiaController
+  include Pagy::Method
   before_action :set_horse, only: %i[ show edit update destroy ]
   before_action :require_login, only: %i[ new create edit update destroy ]
 
   # GET /horses or /horses.json
   def index
-    @horses = Horse.all.order(:name).with_attached_images
+    @pagy, @horses = pagy( :offset, Horse.where(deceased: false).order(:name, :id), limit:6)
+
     horses_with_profile_image = @horses.map do |horse|
       horse.serializable_hash_for_grid
     end
     render inertia: "Horses/Index",
-    props: { horses: horses_with_profile_image }
+    props: {
+      horses: horses_with_profile_image,
+      pagination: {current: @pagy.page,next: @pagy.next, prev: @pagy.previous, count: @pagy.count, pages: @pagy.pages}
+    }
   end
 
   # GET /horses/1 or /horses/1.json
