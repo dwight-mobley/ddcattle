@@ -63,11 +63,12 @@ const showFailure = (message:string) => {
               <Link href="/contact" className="ml-4 bg-brand-clay hover:bg-opacity-95 text-brand-cream text-sm font-medium px-5 py-2.5 rounded-md transition-all shadow-xs">
                 Get in Touch
               </Link>
-              {user &&
+              {user ?
                 <>
                   <span>Welcome, {user.username}</span>
                   <Link href={'/logout'} method='delete'>Logout</Link>
                 </>
+                : <Link href='/login'>Login</Link>
               }
             </div>
 

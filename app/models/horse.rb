@@ -1,5 +1,11 @@
 class Horse < ApplicationRecord
     has_many_attached :images
+    # Age
+    def age
+        return nil if birthdate.nil?
+        now = Time.now.utc.to_date
+        now.year - birthdate.year
+    end
     # Lazy scope to fetch featured horses for homepage
     scope :featured_for_homepage, -> { where(featured: true, deceased: false).limit(2).with_attached_images }
 
@@ -7,6 +13,7 @@ class Horse < ApplicationRecord
     attributes
       .except("created_at", "updated_at")
       .merge(
+        "age" => age,
         "images" => images.map { |img|
           {
             id: img.id,
