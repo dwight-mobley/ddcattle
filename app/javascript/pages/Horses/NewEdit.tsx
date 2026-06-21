@@ -19,7 +19,7 @@ export default function NewEdit({ horse }: Props) {
         color: horse?.color || '',
         sex: horse?.sex || '',
         brand: horse?.brand || '',
-        birthdate: horse?.foal_year ? new Date(horse.foal_year, 0, 1).toISOString().split('T')[0] : '',
+        birthdate: horse?.birthdate || '',
         herd_management_area: horse?.herd_management_area || '',
         price: horse?.price ? (horse.price / 100) : null,
         featured: horse?.featured || false,
@@ -249,7 +249,7 @@ export default function NewEdit({ horse }: Props) {
                             multiple // Allows selecting more than one file
                             accept="image/*" // Limits file picker to image types
                             onChange={handleFileChange}
-                            className="hover:cursor-pointer w-full px-4 py-2 rounded-lg border border-brand-tan/50 focus:border-brand-clay focus:ring-2 focus:ring-brand-clay/20 outline-none"                               
+                            className="hover:cursor-pointer w-full px-4 py-2 rounded-lg border border-brand-tan/50 focus:border-brand-clay focus:ring-2 focus:ring-brand-clay/20 outline-none"
                         />
                         {errors.images && <p className="text-red-500">{errors.images}</p>}
                     </div>
