@@ -1,10 +1,12 @@
 class PagesController < InertiaController
   def home
-    # Fetches your newly seeded database partners perfectly
-    @featured_horses = Horse.where(featured: true, deceased: false).limit(2)
+    horses = Horse.featured_for_homepage
+    featured_horses = horses.map do |horse|
+      horse.serializable_hash_for_view
+    end
 
     render inertia: 'Home/Index', props: {
-      featuredHorses: @featured_horses.as_json
+      featuredHorses: featured_horses
     }
   end
 end

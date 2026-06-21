@@ -2,15 +2,26 @@ import React, { useState } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import Layout from '@/components/layout/Layout';
 import { Horse } from '@/types';
-
+import CarouselImage from '@/components/CarouselImage'
 interface Props {
     horse: Horse;
 }
 
 export default function Show({ horse }: Props) {
+    console.log(horse)
     const { auth } = usePage().props;
     const isLoggedIn = auth?.logged_in;
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+    const handleDeleteImage = (imageId: number) => {
+        if (confirm('Are you sure you want to permanently delete this photo from the gallery?')) {
+            // Sends request to our custom Rails member route with the target attachment ID
+            router.delete(`/horses/${horse.id}/delete_image`, {
+                data: { image_id: imageId },
+                preserveScroll: true // Keeps the browser window positioned right where it is
+            });
+        }
+    };
 
     const handleDelete = () => {
         if (confirm(`Are you sure you want to delete ${horse.name}?`)) {
@@ -34,14 +45,26 @@ export default function Show({ horse }: Props) {
                 {/* Hero Section with Image */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Image Gallery */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-brand-tan rounded-xl overflow-hidden aspect-4/3 relative">
+                    <div className="lg:col-span-2  ">
+                        <div className=" rounded-xl overflow-hidden  relative">
                             {currentImage ? (
-                                <img
-                                    src={currentImage}
-                                    alt={horse.name}
-                                    className="w-full h-full object-cover"
-                                />
+                                <div className='relative w-full bg-neutral-900 rounded-xl overflow-hidden flex items-center justify-center p-2 h-[400px] sm:h-[500px]'>
+                                    <img
+                                        src={currentImage?.url}
+                                        alt={horse.name}
+                                        loading="lazy"
+                                        className="w-full h-full object-contain sm:object-cover select-none max-w-full max-h-full"
+                                    />
+                                    {/* Deletion Button Layout - Only visible if logged in */}
+                                    {isLoggedIn && (
+                                        <button
+                                            onClick={() => handleDeleteImage(currentImage?.id)}
+                                            className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs px-2.5 py-1.5 rounded-md shadow-lg transition-colors cursor-pointer"
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
+                                </div>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-brand-sage/20 text-brand-sage font-display text-3xl italic font-semibold">
                                     {horse.name}
@@ -65,19 +88,24 @@ export default function Show({ horse }: Props) {
 
                         {/* Thumbnail Navigation */}
                         {horse.images && horse.images.length > 1 && (
-                            <div className="grid grid-cols-4 gap-3 mt-4">
-                                {horse.images.map((image, idx) => (
-                                    <button
-                                        key={idx}
-                                        onClick={() => setSelectedImageIndex(idx)}
-                                        className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${idx === selectedImageIndex
-                                            ? 'border-brand-clay'
-                                            : 'border-transparent hover:border-brand-tan'
-                                            }`}
-                                    >
-                                        <img src={image} alt={`${horse.name} ${idx + 1}`} className="w-full h-full object-cover" />
-                                    </button>
-                                ))}
+                            <div className="">
+                                <div className='rounded bg-green-600 text-white border p-1 w-10 h-8 text-center'>{horse.images.length}</div>
+                                {/* Scrollable Container Container */}
+                                <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-gray-300 scroll-smooth snap-x">
+                                    {horse.images.map((image, idx) => (
+                                        <button
+                                            key={image.id || idx}
+                                            onClick={() => setSelectedImageIndex(idx)}
+                                            className={`flex-none w-24 h-24 aspect-square rounded-lg overflow-hidden border-2 transition-all snap-start ${idx === selectedImageIndex
+                                                ? 'border-brand-clay scale-95 shadow-sm'
+                                                : 'border-transparent hover:border-brand-tan'
+                                                }`}
+                                        >
+                                            {/* Handles individual cloud loading and skeleton placeholders */}
+                                            <CarouselImage src={image.thumbnail_url} alt={`${horse.name} thumbnail ${idx + 1}`} />
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>

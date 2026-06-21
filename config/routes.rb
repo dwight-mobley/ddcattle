@@ -7,7 +7,12 @@ Rails.application.routes.draw do
   end
   root 'pages#home'
 
-  resources :horses
+  resources :horses do
+      member do
+      # Creates a custom endpoint: DELETE /horses/:id/delete_image
+      delete :delete_image
+    end
+  end
 
   # Auth
   get "login" => "sessions#new", as: :login
