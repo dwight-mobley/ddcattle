@@ -19,8 +19,14 @@ class HorsesController < InertiaController
 
   # GET /horses/1 or /horses/1.json
   def show
+    horse_data = @horse.attributes
+    @pagy, @images = pagy(:offset, @horse.images.order(created_at: :asc), limit: 4)
     render inertia: "Horses/Show",
-     props: { horse: @horse.serializable_hash_for_view }
+     props: {
+      horse: horse_data,
+      images: @images.map {|img| { id: img.id, url: url_for(img)}},
+      imagesPagination: {next: @pagy.next, prev: @pagy.previous, count: @pagy.count}
+     }
   end
 
   # GET /horses/new
