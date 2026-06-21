@@ -1,4 +1,5 @@
 import Layout from '@/components/layout/Layout';
+import { Link } from '@inertiajs/react';
 import React from 'react';
 
 export default function AboutPage() {
@@ -198,12 +199,12 @@ export default function AboutPage() {
           <p className="text-xl text-brand-dark/70 mb-12 leading-relaxed">
             Join us in discovering the tradition, quality, and care that defines DD Cattle Company. Let's start a conversation about your ranching journey.
           </p>
-          <button className="inline-flex items-center gap-2 bg-brand-clay hover:bg-brand-clay/90 text-brand-cream px-10 py-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+          <Link href='/contact' className="inline-flex items-center gap-2 bg-brand-clay hover:bg-brand-clay/90 text-brand-cream px-10 py-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
             Get In Touch
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>
-          </button>
+          </Link>
         </div>
       </section>
 
