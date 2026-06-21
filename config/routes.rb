@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   end
   root 'pages#home'
 
+  # Static pages
+  inertia "about" => "About/Index"
+
   resources :horses do
       member do
       # Creates a custom endpoint: DELETE /horses/:id/delete_image
