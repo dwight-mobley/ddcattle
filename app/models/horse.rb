@@ -20,6 +20,7 @@ class Horse < ApplicationRecord
     attributes
       .except("created_at", "updated_at")
       .merge(
+        "age" => age,
         "profile_image_url" => profile_image_url
       )
   end
