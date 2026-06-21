@@ -1,6 +1,7 @@
 type HorseImage = {
   id:number;
   url: string;
+  thumbnail_url: string;
 };
 
 export type HorseBreed =

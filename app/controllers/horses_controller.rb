@@ -57,7 +57,7 @@ class HorsesController < InertiaController
         @horse.images.attach(uploaded_images)
       end
 
-      redirect_to horse_path(@horse), notice: "Horse was successfully updated.", status: :see_other
+      redirect_to horse_path(@horse), notice:{ message: "Horse was successfully updated.", id: Time.now.to_i }, status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end

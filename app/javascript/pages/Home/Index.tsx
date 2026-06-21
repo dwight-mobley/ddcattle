@@ -68,7 +68,7 @@ export default function HomeIndex({ featuredHorses }: Props) {
             <Link href="/about" className="px-5 py-2.5 bg-brand-dark text-brand-cream rounded-md text-sm font-medium hover:bg-brand-dark/90 transition-colors">
               Learn Our Story
             </Link>
-            <Link href="/mustangs" className="px-5 py-2.5 bg-white text-brand-dark border border-brand-tan rounded-md text-sm font-medium hover:bg-gray-50 transition-colors">
+            <Link href="/horses" className="px-5 py-2.5 bg-white text-brand-dark border border-brand-tan rounded-md text-sm font-medium hover:bg-gray-50 transition-colors">
               Meet the Horses
             </Link>
           </div>
@@ -113,7 +113,7 @@ export default function HomeIndex({ featuredHorses }: Props) {
               <div className="absolute inset-0 p-8 flex flex-col justify-end space-y-2">
                 <h3 className="font-display text-2xl font-bold text-brand-cream">Exceptional Horses</h3>
                 <p className="text-brand-cream/80 text-sm max-w-sm line-clamp-2">Our ranch is home to some of the finest horses in the region, bred for performance, temperament, and conformation.</p>
-                <Link href="/mustangs" className="inline-flex items-center text-xs font-semibold text-brand-cream hover:underline pt-2">
+                <Link href="/horses" className="inline-flex items-center text-xs font-semibold text-brand-cream hover:underline pt-2">
                   Learn More →
                 </Link>
               </div>
@@ -152,7 +152,7 @@ export default function HomeIndex({ featuredHorses }: Props) {
               {/* Card Image Block */}
               <div className="lg:col-span-5 lg:dir-ltr">
                 <div className="aspect-16/10 rounded-xl overflow-hidden border border-brand-tan bg-brand-cream relative">
-                  {horse.images && horse.images.length > 0 ? <img src={horse.images[0]} alt={horse.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-brand-sage font-display italic font-semibold">{horse.name}</div>}
+                  {horse.images && horse.images.length > 0 ? <img src={horse.images[0].url} alt={horse.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-brand-sage font-display italic font-semibold">{horse.name}</div>}
                   <span className="absolute top-4 left-4 bg-brand-clay text-brand-cream text-xxs uppercase tracking-wider font-bold px-2.5 py-1 rounded shadow-xs">★ Featured</span>
                 </div>
               </div>
@@ -189,10 +189,10 @@ export default function HomeIndex({ featuredHorses }: Props) {
                 </div>
 
                 <div className="pt-2 flex flex-wrap items-center gap-4">
-                  <Link href={`/mustangs/${horse.id}`} className="px-5 py-2.5 bg-brand-clay text-brand-cream rounded-md text-sm font-medium hover:bg-brand-clay/90 transition-colors">
+                  <Link href={`/horses/${horse.id}`} className="px-5 py-2.5 bg-brand-clay text-brand-cream rounded-md text-sm font-medium hover:bg-brand-clay/90 transition-colors">
                     Learn More About "{horse.name}" →
                   </Link>
-                  <Link href="/mustangs" className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-brand-dark transition-colors">
+                  <Link href="/horses" className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-brand-dark transition-colors">
                     View All Horses
                   </Link>
                 </div>

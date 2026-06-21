@@ -76,7 +76,7 @@ export default function HorseIndex({ horses }: Props) {
               <div className="h-64 bg-brand-tan relative overflow-hidden">
                 {horse.images && horse.images.length > 0 ? (
                   <img
-                    src={horse.images[0]}
+                    src={horse.images[0].url}
                     alt={horse.name}
                     className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
                   />
