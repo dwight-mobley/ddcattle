@@ -1,24 +1,48 @@
-# README
+# ddcattle
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A modern ranch management platform built with **Ruby on Rails**, **Inertia.js**, **React**, **Neon Postgres**, **Cloudflare R2**, **Pagy**, and **React Toastify**.
 
-Things you may want to cover:
+## 🚀 Tech Stack
 
-* Ruby version
+- Ruby on Rails
+- Inertia.js
+- React
+- Neon Postgres
+- Cloudflare R2
+- Pagy
+- React Toastify
 
-* System dependencies
+## 📦 Installation
 
-* Configuration
+### Clone the repository
+git clone https://github.com/yourname/ddcattle.git
+cd ddcattle
 
-* Database creation
+### Install Ruby gems
+bundle install
 
-* Database initialization
+### Install JavaScript dependencies
+npm install
 
-* How to run the test suite
+### Environment variables
+Create a `.env` file with:
 
-* Services (job queues, cache servers, search engines, etc.)
+DATABASE_URL=postgres://...
+CLOUDFLARE_R2_ACCESS_KEY_ID=...
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=...
+CLOUDFLARE_R2_BUCKET=ddcattle
+CLOUDFLARE_R2_ENDPOINT=https://<account>.r2.cloudflarestorage.com
 
-* Deployment instructions
+## 🗄 Database Setup
 
-* ...
+rails db:create
+rails db:migrate
+rails db:seed
+
+## 🧭 Run Development Server
+
+bin/dev
+
+## 📜 License
+
+MIT License
