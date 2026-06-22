@@ -1,28 +1,12 @@
-// To see this message, add the following to the `<head>` section in your
-// views/layouts/application.html.erb
-//
-//    <%= vite_client_tag %>
-//    <%= vite_javascript_tag 'application' %>
-console.log('Vite ⚡️ Rails')
-
-// If using a TypeScript entrypoint file:
-//     <%= vite_typescript_tag 'application' %>
-//
-// If you want to use .jsx or .tsx, add the extension:
-//     <%= vite_javascript_tag 'application.jsx' %>
-
-console.log('Visit the guide for more information: ', 'https://vite-ruby.netlify.app/guide/rails')
-
-// Example: Load Rails libraries in Vite.
-//
-// import * as Turbo from '@hotwired/turbo'
-// Turbo.start()
-//
-// import ActiveStorage from '@rails/activestorage'
-// ActiveStorage.start()
-//
-// // Import all channels.
-// const channels = import.meta.glob('./**/*_channel.js', { eager: true })
-
-// Example: Import a stylesheet in app/frontend/index.css
-// import '~/index.css'
+console.log(
+  "%c👋 Hello, Fellow Developer!",
+  "color: #0ea5e9; font-size: 20px; font-weight: bold;"
+);
+console.log(
+  "Thanks for checking out my demo! This application is powered by a modern full-stack architecture: Ruby on Rails, Inertia.js, React, and Tailwind CSS, backed by a Neon Postgres database.\n\n" +
+  "Under the hood, it leverages Pagy for lightning-fast pagination, Cloudflare R2 for storage, Resend for transactional emails, and React Toastify for seamless UI feedback.\n\n" +
+  "After spending the last several years as a freelance developer building custom software solutions for small businesses, I am actively seeking a full-time software engineering role. " +
+  "If you like what you see, I'd love to connect!\n\n" +
+  "📄 Portfolio & Resume: https://dwight-mobley.com\n" +
+  "💼 LinkedIn: https://www.linkedin.com/in/dwight-mobley-13825b296/"
+);
