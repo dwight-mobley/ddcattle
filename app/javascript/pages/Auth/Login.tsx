@@ -1,6 +1,7 @@
 import React from "react";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import Layout from "@/components/layout/Layout";
+import DemoAccessBanner from "@/components/DemoAccessBanner";
 
 export default function Login() {
   const { flash } = usePage<{ flash?: { alert?: string; notice?: string } }>().props;
@@ -15,7 +16,8 @@ export default function Login() {
 
 
   return (
-    <>
+    <div>
+      <DemoAccessBanner/>
       <Head title="Login" />
 
       <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center py-20">
@@ -84,7 +86,7 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
