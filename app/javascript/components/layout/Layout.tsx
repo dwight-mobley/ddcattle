@@ -58,7 +58,6 @@ const showFailure = (message:string) => {
             {/* Desktop Navigation links */}
             <div className="hidden md:flex space-x-8 items-center">
               <Link href="/horses" className="text-sm font-medium hover:text-brand-clay transition-colors">The Horses</Link>
-              <Link href="/cattle" className="text-sm font-medium hover:text-brand-clay transition-colors">Our Cattle</Link>
               <Link href="/about" className="text-sm font-medium hover:text-brand-clay transition-colors">Our Story</Link>
               <Link href="/contact" className="ml-4 bg-brand-clay hover:bg-opacity-95 text-brand-cream text-sm font-medium px-5 py-2.5 rounded-md transition-all shadow-xs">
                 Get in Touch
@@ -101,7 +100,6 @@ const showFailure = (message:string) => {
         <div className={`${isOpen ? 'block' : 'hidden'} md:hidden bg-brand-cream border-t border-brand-tan`} id="mobile-menu">
           <div className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
             <Link onClick={() => setIsOpen(!isOpen)} href="/horses" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">The Mustangs</Link>
-            <Link onClick={() => setIsOpen(!isOpen)} href="/cattle" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Our Cattle</Link>
             <Link onClick={() => setIsOpen(!isOpen)} href="/about" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Our Story</Link>
             {!auth.user && <Link onClick={() => setIsOpen(!isOpen)} href="/login" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Login</Link>}
             {auth.user && <Link onClick={() => setIsOpen(!isOpen)} href="/logout" method='delete' className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Logout</Link>}
