@@ -100,12 +100,13 @@ const showFailure = (message:string) => {
         {/* Mobile Navigation Menu */}
         <div className={`${isOpen ? 'block' : 'hidden'} md:hidden bg-brand-cream border-t border-brand-tan`} id="mobile-menu">
           <div className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
-            <Link href="/horses" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">The Mustangs</Link>
-            <Link href="/cattle" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Our Cattle</Link>
-            <Link href="/about" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Our Story</Link>
-            <Link href="/login" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Login</Link>
+            <Link onClick={() => setIsOpen(!isOpen)} href="/horses" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">The Mustangs</Link>
+            <Link onClick={() => setIsOpen(!isOpen)} href="/cattle" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Our Cattle</Link>
+            <Link onClick={() => setIsOpen(!isOpen)} href="/about" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Our Story</Link>
+            {!auth.user && <Link onClick={() => setIsOpen(!isOpen)} href="/login" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Login</Link>}
+            {auth.user && <Link onClick={() => setIsOpen(!isOpen)} href="/logout" method='delete' className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Logout</Link>}
             <div className="pt-4 px-3">
-              <Link href="/contact" className="block text-center bg-brand-clay text-brand-cream font-medium py-2.5 px-4 rounded-md shadow-xs">
+              <Link onClick={() => setIsOpen(!isOpen)} href="/contact" className="block text-center bg-brand-clay text-brand-cream font-medium py-2.5 px-4 rounded-md shadow-xs">
                 Get in Touch
               </Link>
             </div>
