@@ -103,6 +103,7 @@ const showFailure = (message:string) => {
             <Link href="/horses" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">The Mustangs</Link>
             <Link href="/cattle" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Our Cattle</Link>
             <Link href="/about" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Our Story</Link>
+            <Link href="/login" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Login</Link>
             <div className="pt-4 px-3">
               <Link href="/contact" className="block text-center bg-brand-clay text-brand-cream font-medium py-2.5 px-4 rounded-md shadow-xs">
                 Get in Touch
