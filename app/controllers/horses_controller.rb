@@ -33,13 +33,13 @@ class HorsesController < InertiaController
   def new
     @horse = Horse.new
    render inertia: "Horses/NewEdit",
-   props: { horse: @horse.serializable_hash_for_view }
+   props: { horse: @horse_to_json}
   end
 
   # GET /horses/1/edit
   def edit
     render inertia: "Horses/NewEdit",
-    props: { horse: @horse.serializable_hash_for_view }
+    props: { horse: @horse_to_json}
   end
 
   # POST /horses or /horses.json

@@ -4,11 +4,14 @@ import { Horse } from "@/types";
 import { formatHorsePrice } from "@/utils/horseHelpers";
 import { Link } from "@inertiajs/react";
 
+type FeaturedHorse = Horse & {profile_image_url: string}
+
 interface Props {
-  featuredHorses: Horse[];
+  featuredHorses: FeaturedHorse[] ;
 }
 
 export default function HomeIndex({ featuredHorses }: Props) {
+
   return (
     <div className="space-y-24 pb-16">
       {/* 1. Hero Section */}
@@ -152,8 +155,9 @@ export default function HomeIndex({ featuredHorses }: Props) {
               {/* Card Image Block */}
               <div className="lg:col-span-5 lg:dir-ltr">
                 <div className="aspect-16/10 rounded-xl overflow-hidden border border-brand-tan bg-brand-cream relative">
-                  {horse.images && horse.images.length > 0 ? <img src={horse.images[0].url} alt={horse.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-brand-sage font-display italic font-semibold">{horse.name}</div>}
+                  {horse?.profile_image_url &&  <img src={horse.profile_image_url} alt={horse.name} className="w-full h-full object-cover" /> || <div className="w-full h-full flex items-center justify-center text-brand-sage font-display italic font-semibold">{horse.name}</div>}
                   <span className="absolute top-4 left-4 bg-brand-clay text-brand-cream text-xxs uppercase tracking-wider font-bold px-2.5 py-1 rounded shadow-xs">★ Featured</span>
+                 {horse.price && <span className="absolute bottom-4 left-4 bg-brand-clay text-brand-cream text-xxs uppercase tracking-wider font-bold px-2.5 py-1 rounded shadow-xs">{formatHorsePrice(horse.price)}</span>}
                 </div>
               </div>
 
@@ -165,10 +169,10 @@ export default function HomeIndex({ featuredHorses }: Props) {
                     <span>{horse.breed}</span>
                     <span>•</span>
                     <span>{horse.sex}</span>
-                    {horse.foal_year && (
+                    {horse.birthdate && (
                       <>
                         <span>•</span>
-                        <span>{new Date().getFullYear() - new Date(horse.foal_year).getFullYear()} Years Old</span>
+                        <span>{new Date().getFullYear() - new Date(horse.birthdate).getFullYear()} Years Old</span>
                       </>
                     )}
                   </div>
