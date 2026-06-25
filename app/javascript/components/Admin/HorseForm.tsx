@@ -9,6 +9,7 @@ import {
     getDefaultFormData,
     horseToFormData,
 } from '@/types';
+import axios from 'axios';
 /* ─── helpers ──────────────────────────────────────────────────────── */
 function formatBirthdate(date: Date | null): string {
     if (!date) return '';
@@ -214,12 +215,10 @@ export default function HorseForm({ horse = null }: HorseFormProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (isEditMode) {
-            for (const imageId of deletedImageIds) {
-                router.delete(`/horses/${horse.id}/delete_image`, {
-                    data: { image_id: imageId },
-                    preserveScroll: true // Keeps the browser window positioned right where it is
+            for (const image_id of deletedImageIds) {
+                await axios.delete(`/admin/horses/${horse.id}/delete_image`, {
+                    data: { image_id },
                 });
-
             }
             form.patch(`/admin/horses/${horse.id}`)
         } else {

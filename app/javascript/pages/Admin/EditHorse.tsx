@@ -3,15 +3,15 @@ import AdminLayout from '@/components/layout/AdminLayout'
 import React from 'react'
 import {type Horse} from '@/types'
 
-function NewHorse() {
+function EditHorse({horse}:{horse: Horse}) {
 
   return (
     <div>
-        <HorseForm />
+        <HorseForm horse={horse} />
     </div>
   )
 }
 
-export default NewHorse
+export default EditHorse
 
-NewHorse.layout = (page: React.ReactNode)=><AdminLayout>{page}</AdminLayout>
+EditHorse.layout = (page: React.ReactNode)=><AdminLayout>{page}</AdminLayout>
