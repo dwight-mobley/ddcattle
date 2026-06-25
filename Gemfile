@@ -69,7 +69,7 @@ gem "vite_rails", "~> 3.11"
 
 gem "aws-sdk-s3", require: false
 
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.0"
 
 gem "dotenv-rails", groups: [ :development, :test ]
 
