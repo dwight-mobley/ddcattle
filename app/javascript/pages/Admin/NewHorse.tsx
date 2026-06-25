@@ -3,8 +3,8 @@ import AdminLayout from '@/components/layout/AdminLayout'
 import React from 'react'
 import {type Horse} from '@/types'
 
-function NewHorse({horse}) {
-  
+function NewHorse({horse}:{horse: Horse}) {
+
   return (
     <div>
         <HorseForm horse={horse}/>

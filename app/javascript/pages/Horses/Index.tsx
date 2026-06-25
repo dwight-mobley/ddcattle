@@ -64,14 +64,6 @@ export default function HorseIndex({ horses, pagination }: Props) {
           >
             Available For Sale
           </button>
-          {auth?.user &&
-            <Link
-              href="/horses/new"
-              className={`px-4 py-2 rounded-md text-sm font-medium bg-green-600 text-white`}
-            >
-              + Add New
-            </Link>
-          }
         </div>
       </div>
 
@@ -120,9 +112,7 @@ export default function HorseIndex({ horses, pagination }: Props) {
                     <span className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
                       Age {horse?.age || 'Unknown'}
                     </span>
-                    {auth.user &&
-                      <Link href={`/horses/${horse.id}/edit`} className='text-xs font-mono bg-yellow-100 text-gray-600 px-2 py-0.5 rounded'>Edit</Link>
-                    }
+
                   </div>
 
                   {/* Subtitle Details */}
@@ -155,11 +145,6 @@ export default function HorseIndex({ horses, pagination }: Props) {
                     </svg>
                   </Link>
                 </div>
-                {auth.user &&
-                  <div>
-                    <Link href={`/horses/${horse.id}`} method="delete" className='bg-red-600 text-white p-3 rounded'>Delete</Link>
-                  </div>
-                }
               </div>
 
             </div>
