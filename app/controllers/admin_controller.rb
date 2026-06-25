@@ -75,6 +75,14 @@ class AdminController < InertiaController
     end
   end
 
+  def destroy_horse
+    @horse = Horse.find(params[:id])
+    @horse.destroy!
+    redirect_to admin_horses_path,
+    notice: { message: "Horse was successfully destroyed.", id: Time.now.to_i },
+    status: :see_other
+  end
+
   # Delete Horse Image
   def delete_horse_image
     @horse = Horse.find(params[:id])

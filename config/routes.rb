@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   get "admin/horses/:id/edit" => "admin#edit_horse", as: :admin_edit_horse
   post "admin/horses" => "admin#create_horse", as: :admin_horses_post
   patch "admin/horses/:id" => "admin#update_horse", as: :admin_horse_patch
+  delete "admin/horses/:id" => "admin#destroy_horse", as: :admin_horse_delete
   delete "admin/horses/:id/delete_image" => "admin#delete_horse_image", as: :admin_delete_horse_image
 
   get "up" => "rails/health#show", as: :rails_health_check
