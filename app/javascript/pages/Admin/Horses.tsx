@@ -161,7 +161,7 @@ export default function HorseTable({ horses }: HorseTableProps) {
                     </div>
 
                     <Link
-                        href="/admin/horse/new"
+                        href="/admin/horses/new"
                         className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl shadow-sm transition"
                     >
                         <Plus className="h-4 w-4" />

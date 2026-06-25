@@ -27,6 +27,11 @@ Rails.application.routes.draw do
   # Admin
   get "admin" => "admin#dashboard", as: :admin_dashboard
   get "admin/horses" => "admin#admin_horses", as: :admin_horses
+  get "admin/horses/new" => "admin#new_horse", as: :admin_new_horse
+  get "admin/horses/:id/edit" => "admin#edit_horse", as: :admin_edit_horse
+  post "admin/horses" => "admin#create_horse", as: :admin_horses_post
+  patch "admin/horses/:id" => "admin#update_horse", as: :admin_horse_patch
+  delete "admin/horses/:id/delete_image" => "admin#delete_horse_image", as: :admin_delete_horse_image
 
   get "up" => "rails/health#show", as: :rails_health_check
 end
