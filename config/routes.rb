@@ -26,6 +26,7 @@ Rails.application.routes.draw do
 
   # Admin
   get "admin" => "admin#dashboard", as: :admin_dashboard
+  get "admin/horses" => "admin#admin_horses", as: :admin_horses
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

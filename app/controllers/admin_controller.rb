@@ -1,4 +1,5 @@
 class AdminController < InertiaController
+  include Pagy::Method
   before_action :require_login
 
 
@@ -7,9 +8,17 @@ class AdminController < InertiaController
     db_version = ActiveRecord::Base.connection.select_value("SELECT version()")
     render inertia: "Admin/Dashboard",
     props: {
-      horses: Horse.all.order(:name).map { |horse| horse.serializable_hash_for_grid },
+      horses: Horse.all.order(:name).map { |horse| horse.serializable_hash },
       storage_type: storage_type,
       db_version: db_version
+    }
+  end
+
+  def admin_horses
+    @horses = Horse.all.order(:name).map { |horse| horse.serializable_hash_for_grid }
+    render inertia: "Admin/Horses",
+    props: {
+       horses: @horses
     }
   end
 
@@ -17,7 +26,7 @@ class AdminController < InertiaController
 
   def require_admin
     unless current_user.admin?
-      redirect_to root_path, alert: 'You are not authorized to access this page.'
+      redirect_to root_path, alert: "You are not authorized to access this page."
     end
   end
 end

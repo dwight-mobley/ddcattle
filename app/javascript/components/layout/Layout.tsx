@@ -101,8 +101,8 @@ const showFailure = (message:string) => {
           <div className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
             <Link onClick={() => setIsOpen(!isOpen)} href="/horses" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">The Mustangs</Link>
             <Link onClick={() => setIsOpen(!isOpen)} href="/about" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Our Story</Link>
-            {!auth.user && <Link onClick={() => setIsOpen(!isOpen)} href="/login" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Login</Link>}
-            {auth.user && <Link onClick={() => setIsOpen(!isOpen)} href="/logout" method='delete' className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Logout</Link>}
+            {!auth?.user && <Link onClick={() => setIsOpen(!isOpen)} href="/login" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Login</Link>}
+            {auth?.user && <Link onClick={() => setIsOpen(!isOpen)} href="/logout" method='delete' className="block px-3 py-2 rounded-md text-base font-medium hover:bg-brand-tan">Logout</Link>}
             <div className="pt-4 px-3">
               <Link onClick={() => setIsOpen(!isOpen)} href="/contact" className="block text-center bg-brand-clay text-brand-cream font-medium py-2.5 px-4 rounded-md shadow-xs">
                 Get in Touch
