@@ -24,5 +24,8 @@ Rails.application.routes.draw do
   post "login" => "sessions#create"
   delete "logout" => "sessions#destroy", as: :logout
 
+  # Admin
+  get "admin" => "admin#dashboard", as: :admin_dashboard
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

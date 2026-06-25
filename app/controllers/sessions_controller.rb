@@ -8,7 +8,7 @@ class SessionsController < InertiaController
 
     if @user&.authenticate(params[:password])
       session[:user_id] = @user.id
-        redirect_to(root_path, notice: { message: "Signed in successfully.", id: Time.now.to_i })
+        redirect_to(admin_dashboard_path, notice: { message: "Signed in successfully.", id: Time.now.to_i })
 
     else
         redirect_to(login_path, alert: {message: "Invalid username or password", id: Time.now.to_i})
