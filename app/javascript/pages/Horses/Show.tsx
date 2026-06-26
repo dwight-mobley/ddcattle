@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import Layout from '@/components/layout/Layout';
 import { Horse } from '@/types';
