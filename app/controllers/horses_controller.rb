@@ -19,7 +19,7 @@ class HorsesController < InertiaController
 
   # GET /horses/1 or /horses/1.json
   def show
-    horse_data = @horse.attributes
+    horse_data = @horse.serializable_hash_for_grid
     @pagy, @images = pagy(:offset, @horse.images.order(created_at: :asc), limit: 4)
     render inertia: "Horses/Show",
      props: {
