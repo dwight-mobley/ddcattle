@@ -10,27 +10,12 @@ interface Props {
 }
 
 export default function Show({ horse, images: initialImages, imagesPagination }: Props) {
-    
-    const { auth } = usePage().props;
-    const isLoggedIn = auth?.logged_in;
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [images, setImages] = useState(initialImages)
 
-    const handleDeleteImage = (imageId: number) => {
-        if (confirm('Are you sure you want to permanently delete this photo from the gallery?')) {
-            // Sends request to our custom Rails member route with the target attachment ID
-            router.delete(`/horses/${horse.id}/delete_image`, {
-                data: { image_id: imageId },
-                preserveScroll: true // Keeps the browser window positioned right where it is
-            });
-        }
-    };
 
-    const handleDelete = () => {
-        if (confirm(`Are you sure you want to delete ${horse.name}?`)) {
-            router.delete(`/horses/${horse.id}`);
-        }
-    };
+
+
 
     const currentImage = images?.[selectedImageIndex];
 
@@ -74,15 +59,7 @@ export default function Show({ horse, images: initialImages, imagesPagination }:
                                         loading="lazy"
                                         className="w-full h-full  object-contain select-none max-w-full max-h-full"
                                     />
-                                    {/* Deletion Button Layout - Only visible if logged in */}
-                                    {isLoggedIn && (
-                                        <button
-                                            onClick={() => handleDeleteImage(currentImage?.id)}
-                                            className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs px-2.5 py-1.5 rounded-md shadow-lg transition-colors cursor-pointer"
-                                        >
-                                            Delete
-                                        </button>
-                                    )}
+
                                 </div>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-brand-sage/20 text-brand-sage font-display text-3xl italic font-semibold">
@@ -187,24 +164,6 @@ export default function Show({ horse, images: initialImages, imagesPagination }:
                                 </div>
                             )}
                         </div>
-
-                        {/* Action Buttons */}
-                        {isLoggedIn && (
-                            <div className="flex flex-col gap-3">
-                                <Link
-                                    href={`/horses/${horse.id}/edit`}
-                                    className="text-center px-5 py-3 bg-brand-clay text-brand-cream font-medium rounded-lg hover:bg-brand-clay/90 transition-all"
-                                >
-                                    Edit Horse
-                                </Link>
-                                <button
-                                    onClick={handleDelete}
-                                    className="px-5 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-all"
-                                >
-                                    Delete Horse
-                                </button>
-                            </div>
-                        )}
                     </div>
                 </div>
 

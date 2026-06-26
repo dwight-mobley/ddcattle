@@ -1,28 +1,30 @@
 Rails.application.routes.draw do
-  # Redirect to localhost from 127.0.0.1 to use same IP address with Vite server
   constraints(host: "127.0.0.1") do
     get "(*path)", to: redirect { |params, req| "#{req.protocol}localhost:#{req.port}/#{params[:path]}" }
   end
-  root "pages#home"
 
-  # Static pages
+  root "pages#home"
   inertia "about" => "About/Index"
 
   resources :horses do
-      member do
-      # Creates a custom endpoint: DELETE /horses/:id/delete_image
-      delete :delete_image
-    end
+    delete :delete_image, on: :member
   end
 
-  # Contact
   get "contact", to: "contacts#index"
   post "contact", to: "contacts#create"
 
-  # Auth
-  get "login" => "sessions#new", as: :login
-  post "login" => "sessions#create"
-  delete "logout" => "sessions#destroy", as: :logout
+  resource :session, only: %i[new create destroy], path: "" do
+    get  :new,     path: "login",  as: :login
+    post :create,  path: "login"
+    delete :destroy, path: "logout", as: :logout
+  end
 
-  get "up" => "rails/health#show", as: :rails_health_check
+ namespace :admin do
+  root to: "dashboard#index", as: :dashboard
+  resources :horses, except: :show do
+    delete :delete_image, on: :member
+  end
+end
+
+  get "up", to: "rails/health#show", as: :rails_health_check
 end

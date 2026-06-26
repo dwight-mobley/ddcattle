@@ -5,17 +5,10 @@ class InertiaController < ApplicationController
     flash.to_hash
   }
 
-  inertia_share auth: -> {
-    {
-      user: current_user&.as_json(only: [:id, :username]),
-      logged_in: logged_in?
-    }
-  }
+
   private
+
   
-  def logged_in?
-    current_user.present?
-  end
 
   def require_login
     return if logged_in?
