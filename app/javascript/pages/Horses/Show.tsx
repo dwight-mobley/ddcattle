@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import Layout from '@/components/layout/Layout';
 import { Horse } from '@/types';
@@ -11,12 +11,7 @@ interface Props {
 
 export default function Show({ horse, images: initialImages, imagesPagination }: Props) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-    const [images, setImages] = useState(initialImages)
-
-
-
-
-
+    const [images, setImages] = useState(initialImages);
     const currentImage = images?.[selectedImageIndex];
 
     const loadMoreImages = (pageNumber: number) => {
