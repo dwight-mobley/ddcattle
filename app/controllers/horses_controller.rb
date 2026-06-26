@@ -1,11 +1,11 @@
 class HorsesController < InertiaController
   include Pagy::Method
   before_action :set_horse, only: %i[ show  ]
- 
+
 
   # GET /horses or /horses.json
   def index
-    @pagy, @horses = pagy( :offset, Horse.where(deceased: false).order(:name, :id), limit:6)
+    @pagy, @horses = pagy( :offset, Horse.order(:name, :id), limit:20)
 
     horses_with_profile_image = @horses.map do |horse|
       horse.serializable_hash_for_grid
