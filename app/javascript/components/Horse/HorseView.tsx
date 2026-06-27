@@ -53,7 +53,10 @@ export const HorseView: React.FC<HorseViewProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {horses.map((horse) => {
             const isComp = isCompared(horse.id);
-            const mainImg = horse.images[0]?.url || 'https://images.unsplash.com/photo-1598146621261-7cdbb2b30d4b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3Dw=400';
+            const mainImg = horse.images.length >= 1 ? horse.images[0].url :
+            horse.deceased ?'https://images.unsplash.com/photo-1598146621261-7cdbb2b30d4b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3Dw=400'
+                      : 'https://www.mampublicschool.com/demo.jpg'
+
 
             return (
               <div
