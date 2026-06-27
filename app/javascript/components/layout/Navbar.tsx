@@ -45,8 +45,8 @@ function Navbar() {
         <nav className="nav-enter sticky top-0 z-50 border-b border-[#d8c3a3]/70 bg-[#fffaf1]/90 text-[#20150d] shadow-[0_1px_18px_rgba(60,37,21,0.08)] backdrop-blur-xl">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-20 items-center justify-between gap-6">
-                    <a
-                        href="#home"
+                    <Link
+                        href="/home"
                         className="group flex min-w-0 items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a95d38]"
                         aria-label="DD Cattle Co. and Mustangs home"
                     >
@@ -61,7 +61,7 @@ function Navbar() {
                                 Co. & Mustangs
                             </span>
                         </span>
-                    </a>
+                    </Link>
 
                     <div className="hidden items-center gap-10 md:flex">
                         <div className="flex items-center gap-8" aria-label="Primary navigation">
@@ -165,7 +165,7 @@ function Navbar() {
                                     Logout
                                 </Link>
                             </>:
-                              <Link 
+                              <Link
                                     href="/login"
                                     className="text-sm font-semibold text-[#3a2a1d] transition hover:text-[#a95d38] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a95d38]"
                                 >
