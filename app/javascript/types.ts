@@ -30,7 +30,7 @@ export interface Horse {
   height: number | null;
 }
 
-export type HorseFormPayload = Omit<Horse, 'id' | 'images'> & { images: File[] };
+export type HorseFormPayload = Omit<Horse, 'id' | 'images' |'age'> & { images: File[] };
 
 export type HorseFormErrors = Partial<Record<keyof HorseFormPayload, string>>;
 
@@ -53,7 +53,6 @@ export function getDefaultFormData(): HorseFormPayload {
     breed: 'Mustang',
     color: '',
     sex: 'GELDING',
-    age: null,
     birthdate: null,
     brand: null,
     herd_management_area: null,
@@ -73,7 +72,6 @@ export function horseToFormData(horse: Horse): HorseFormPayload {
     breed: horse.breed,
     color: horse.color,
     sex: horse.sex,
-    age: horse.age,
     birthdate: horse.birthdate,
     brand: horse.brand,
     herd_management_area: horse.herd_management_area,
@@ -96,10 +94,6 @@ export function validateHorseForm(data: HorseFormPayload): HorseFormErrors {
 
   if (!data.color.trim()) {
     errors.color = 'Color is required';
-  }
-
-  if (data.age !== null && data.age < 0) {
-    errors.age = 'Age cannot be negative';
   }
 
   if (data.price !== null && data.price < 0) {

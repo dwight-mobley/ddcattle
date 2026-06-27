@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, type ChangeEvent } from 'react';
-import { Link, router, useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import { cn } from '@/utils/cn';
 import {
     type Horse,
@@ -151,7 +151,7 @@ export default function HorseForm({ horse = null }: HorseFormProps) {
         [setData, clearErrors],
     );
     const handleNumber = useCallback(
-        (field: 'age' | 'price' | 'weight' | 'height') =>
+        (field: 'price' | 'weight' | 'height') =>
             (e: ChangeEvent<HTMLInputElement>) => {
                 const v = e.target.value;
                 setData(field, v === '' ? null : Number(v));
@@ -169,8 +169,8 @@ export default function HorseForm({ horse = null }: HorseFormProps) {
     );
     const handlePrice = useCallback(
         (e: ChangeEvent<HTMLInputElement>) => {
-            const v = e.target.value;
-            setData('price', v === '' ? null : Math.round(parseFloat(v) * 100));
+            const v = parseFloat(e.target.value);
+            setData('price', Math.round(v * 100));
             clearErrors('price');
         },
         [setData, clearErrors],
@@ -379,27 +379,6 @@ export default function HorseForm({ horse = null }: HorseFormProps) {
                         Physical Details
                     </h2>
                     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                        {/* Age */}
-                        <div>
-                            <label htmlFor="age" className="mb-1.5 block text-sm font-medium text-slate-700">
-                                Age (years)
-                            </label>
-                            <input
-                                id="age"
-                                type="number"
-                                min="0"
-                                value={data.age ?? ''}
-                                onChange={handleNumber('age')}
-                                placeholder="—"
-                                className={cn(
-                                    'w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm transition-colors placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
-                                    errors.age
-                                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                        : 'border-slate-200 focus:border-indigo-400',
-                                )}
-                            />
-                            <FieldError message={errors.age} />
-                        </div>
                         {/* Birthdate */}
                         <div>
                             <label htmlFor="birthdate" className="mb-1.5 block text-sm font-medium text-slate-700">
@@ -493,10 +472,9 @@ export default function HorseForm({ horse = null }: HorseFormProps) {
                                     id="price"
                                     type="number"
                                     min="0"
-                                    step="0.01"
-                                    value={formatCents(data.price)}
+                                    value={data.price ? data.price/100 : undefined}
                                     onChange={handlePrice}
-                                    placeholder="0.00"
+                                    placeholder="0"
                                     className={cn(
                                         'w-full rounded-xl border bg-slate-50 py-3 pl-8 pr-4 text-sm transition-colors placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
                                         errors.price
