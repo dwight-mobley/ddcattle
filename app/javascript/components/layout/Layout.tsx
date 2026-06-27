@@ -8,10 +8,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { auth, flash } = usePage().props;
-  const user = auth?.user;
-
+  const {  flash } = usePage().props;
 
   const showSuccess = (message:string) => {
   toast.success(message, {

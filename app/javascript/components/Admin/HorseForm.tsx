@@ -120,7 +120,6 @@ interface HorseFormProps {
     horse?: Horse | null;
 }
 export default function HorseForm({ horse = null }: HorseFormProps) {
-    console.log(horse);
     const isEditMode = !!horse;
     const fileInputRef = useRef<HTMLInputElement>(null);
     /* ── useForm initialisation ──────────────────────────────────────── */

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '@/components/Admin/Sidebar';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { usePage } from '@inertiajs/react';
 
 
@@ -50,7 +50,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex font-sans transition-colors duration-150 selection:bg-indigo-500/20 pb-36">
 
-
+           {flash && <ToastContainer autoClose={1500} />}
 
             {/* Sidebar Navigation */}
             <Sidebar
