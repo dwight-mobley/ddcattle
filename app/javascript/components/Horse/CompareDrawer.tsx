@@ -1,6 +1,8 @@
 import React from 'react';
 import { Horse } from '@/types';
 import { X, Scale, Ruler, Award } from 'lucide-react';
+import { formatHorsePrice } from '@/utils/horseHelpers';
+import { Link } from '@inertiajs/react';
 
 interface CompareDrawerProps {
   compareList: Horse[];
@@ -78,7 +80,7 @@ export const CompareDrawer: React.FC<CompareDrawerProps> = ({
                 <td key={horse.id} className="py-3 px-3">
                   <div className="relative h-16 w-full rounded-lg overflow-hidden bg-slate-50">
                     <img
-                      src={horse.images[0]?.thumbnail_url || 'https://images.unsplash.com/photo-1534073828943-f801091bb18c?auto=format&fit=crop&q=80&w=200'}
+                      src={horse.images[0]?.url || 'https://www.mampublicschool.com/demo.jpg'}
                       alt={horse.name}
                       className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
                     />
@@ -110,7 +112,7 @@ export const CompareDrawer: React.FC<CompareDrawerProps> = ({
               {compareList.map(horse => (
                 <td key={horse.id} className="py-3 px-3 font-bold text-slate-900">
                   {horse.price !== null ? (
-                    <span className="text-emerald-700">${horse.price.toLocaleString()}</span>
+                    <span className="text-emerald-700">{formatHorsePrice(horse.price)}</span>
                   ) : (
                     <span className="text-slate-400 italic">In Memoriam</span>
                   )}
@@ -211,11 +213,12 @@ export const CompareDrawer: React.FC<CompareDrawerProps> = ({
               <td className="py-3 font-semibold text-slate-500">Quick view</td>
               {compareList.map(horse => (
                 <td key={horse.id} className="py-3 px-3">
-                  <button
+                  <Link
+                  href={`/horses/${horse.id}`}
                     className="w-full py-1 text-center bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-md font-semibold text-[10px] transition-colors cursor-pointer"
                   >
                     Open Profile
-                  </button>
+                  </Link>
                 </td>
               ))}
               {compareList.length < 3 && <td className="p-3 bg-slate-50/30"></td>}
