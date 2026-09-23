@@ -1,0 +1,6 @@
+New inquiry for {{ animal.name }}
+
+From: {{ data.sender_name }} ({{ data.sender_email }})
+
+Message:
+{{ data.message }}

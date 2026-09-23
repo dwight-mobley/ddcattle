@@ -1,0 +1,9 @@
+Hi {{ data.name }},
+
+Thank you for reaching out. We have received your inquiry regarding {{ data.subject }} and will get back to you as soon as we can.
+
+Your message:
+{{ data.message }}
+
+Best,
+The Ranch Team

@@ -1,0 +1,9 @@
+Hi {{ data.sender_name }},
+
+Thank you for reaching out about {{ animal.name }}. We have received your message and will get back to you shortly.
+
+Your message:
+{{ data.message }}
+
+Best,
+The Ranch Team

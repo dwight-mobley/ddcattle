@@ -1,0 +1,22 @@
+/* app/globals.css */
+@import "tailwindcss";
+
+@theme {
+  /* Mustang-tailored earth palette */
+  --color-saddle-brown: #4A3021;
+  --color-desert-sand: #F7F5F0;
+  --color-sage: #899684;
+  --color-rust: #A34931;
+  --color-charcoal: #2A2A2A;
+
+  /* Typography */
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Inter', sans-serif;
+  
+  /* Custom UI shapes */
+  --radius-xl: 1rem;
+}
+
+body {
+  @apply bg-desert-sand text-charcoal font-sans;
+}
