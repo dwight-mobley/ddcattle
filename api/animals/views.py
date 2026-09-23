@@ -16,7 +16,7 @@ from media_library.models import AnimalMedia
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives, get_connection
-
+from rest_framework.permissions import AllowAny
 class BaseAnimalViewSet(viewsets.ModelViewSet):
     """
     Base ViewSet that handles universal access control
@@ -49,9 +49,12 @@ class BaseAnimalViewSet(viewsets.ModelViewSet):
             
         return qs.order_by('-featured', 'name')   
 
-    @action(detail=True, methods=['post'], url_path='inquire')
+    @action(detail=True, methods=['post'], url_path='inquire', permission_classes=[AllowAny])
     def inquire(self, request, slug=None):
+        
         animal = self.get_object()
+        if request.data.get('honeypot'):
+            return Response({"detail": "Inquiry sent successfully."}, status=status.HTTP_200_OK)
         
         serializer = AnimalInquirySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

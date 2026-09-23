@@ -13,6 +13,10 @@ export default function InquiryModal({ isOpen, onClose, animal, slug }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (formData.honeypot) {
+        setIsSuccess(true);
+        return;
+      }
         console.log({ slug: slug, data: formData })
       await sendInquiry({ slug: slug, data: formData }).unwrap();
       setIsSuccess(true);
@@ -61,6 +65,7 @@ export default function InquiryModal({ isOpen, onClose, animal, slug }) {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6 text-sm">
+              <input type="hidden" name="honeypot" value="" />
               <div>
                 <label className="block text-sage font-bold uppercase tracking-widest mb-2">Your Name</label>
                 <input 
