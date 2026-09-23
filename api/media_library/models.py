@@ -1,3 +1,5 @@
+from urllib.parse import urljoin
+
 from django.conf import settings
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -76,6 +78,12 @@ class AnimalMedia(models.Model):
     class Meta:
         verbose_name="Media"
         verbose_name_plural = "Media"
+
+    def get_url(self):
+        if self.public:
+            return f"https://media.ddcattle.company/{self.file.name}"
+
+        return self.file.url
 
     def __str__(self):
         return f"{self.animal.name}: {self.file.name}"
