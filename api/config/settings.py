@@ -75,11 +75,16 @@ CORS_ALLOWED_ORIGINS = [
   
 ]
 
+
+
 # Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+            'anon': '5/hour',  # 5 inquiries per hour per IP
+        },
 }
 # Simple JWT Configuration
 from datetime import timedelta

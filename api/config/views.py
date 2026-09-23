@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
+from rest_framework.throttling import AnonRateThrottle
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.template.loader import render_to_string
 from rest_framework import serializers
@@ -14,11 +15,14 @@ class ContactSerializer(serializers.Serializer):
 
 class ContactFormView(APIView):
     permission_classes = [AllowAny] # Ensure anyone can use the contact page
+    throttle_classes = [AnonRateThrottle]
 
     def post(self, request):
         serializer = ContactSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
+        if request.data.get('honeypot'):
+            return Response({"detail": "Message sent successfully."}, status=status.HTTP_200_OK)
         
         context = {'data': data}
         
