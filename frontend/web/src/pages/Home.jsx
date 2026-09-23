@@ -7,18 +7,17 @@ import Loader from '../components/Loader';
 import { AnimalCard } from '../components/AnimalCard';
 
 export default function RanchHome() {
-  const { data: featuredAnimals=[], isLoading, isError } = useGetFeaturedAnimalsQuery(); 
-  if (isLoading) return <Loader/>;
-  if (isError) return <p>Error loading horses.</p>;
+  const { data: featuredAnimals = [], isLoading, isError } = useGetFeaturedAnimalsQuery();
+
   return (
     <main className="w-full min-h-screen">
-      
+
       {/* Hero Section: Epic, sweeping imagery */}
       <section className="relative w-full h-[85vh] flex items-center justify-center bg-saddle-brown">
         <div className="absolute inset-0 overflow-hidden">
-          <img 
-            src="images/491d6900-da7c-437d-bb29-af1101e03c88_C_xBEjnAX.jpeg" 
-            alt="Mustangs running in open pasture" 
+          <img
+            src="images/491d6900-da7c-437d-bb29-af1101e03c88_C_xBEjnAX.jpeg"
+            alt="Mustangs running in open pasture"
             className="w-full h-full object-cover opacity-65 mix-blend-overlay"
           />
         </div>
@@ -30,7 +29,7 @@ export default function RanchHome() {
             Preserving the heritage, resilience, and natural conformation of the American Mustang.
           </p>
           <Link to="/barn" className="mt-10 px-8 py-4 bg-rust text-desert-sand font-semibold rounded-xl hover:bg-saddle-brown transition-all duration-300 uppercase tracking-wider text-sm border border-transparent hover:border-desert-sand/50 shadow-xl">
-           Tour The Barn
+            Tour The Barn
           </Link>
         </div>
       </section>
@@ -42,7 +41,7 @@ export default function RanchHome() {
             A Legacy Built on Resilience
           </h2>
           <p className="text-charcoal/80 mb-6 leading-relaxed text-lg">
-            Mustangs represent a unique chapter in equestrian history. Decades of dedicated horsemanship form the foundation of our approach, allowing us to understand the distinct nuances of gentle training and specialized care these animals require. 
+            Mustangs represent a unique chapter in equestrian history. Decades of dedicated horsemanship form the foundation of our approach, allowing us to understand the distinct nuances of gentle training and specialized care these animals require.
           </p>
           <p className="text-charcoal/80 mb-8 leading-relaxed text-lg">
             Whether evaluating behavioral traits, assessing conformation, or managing daily medical records, our facility is dedicated to bringing out the best in their natural intelligence and spirit.
@@ -52,9 +51,9 @@ export default function RanchHome() {
           </a>
         </div>
         <div className="relative h-[500px] rounded-xl overflow-hidden shadow-2xl border-4 border-white">
-           <img 
-            src="images/20260525213209817859.jpeg" 
-            alt="Mustang horse portrait" 
+          <img
+            src="images/20260525213209817859.jpeg"
+            alt="Mustang horse portrait"
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
           />
         </div>
@@ -63,22 +62,63 @@ export default function RanchHome() {
       {/* Grid Showcase: Mapping RTK Query Data */}
       <section className="bg-sage/15 py-24 border-y border-sage/30">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <h3 className="text-4xl font-serif text-saddle-brown mb-4">DD Spotlight</h3>         
+          <h3 className="text-4xl font-serif text-saddle-brown mb-4">DD Spotlight</h3>
           <p className="text-charcoal/70 max-w-2xl mx-auto mb-16">
             Checkout our featured animals in the spotlight section below.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 text-left">
-            {featuredAnimals.map(fa => (
-             <AnimalCard
-               key={fa.id}
-               animal={fa}
-             />
-            ))}
-        
+          <div className="flex justify-center items-center">
+            {isLoading ? (
+              <Loader fullScreen={false} />
+            ) : isError ? (
+              <div className="mx-auto my-8 flex max-w-2xl items-center gap-4 rounded-xl border border-gray-200 bg-desert-sand p-5 text-gray-800 shadow-sm">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white shadow-sm">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-6 w-6 text-gray-500"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 3L2.5 20h19L12 3z" />
+                    <path d="M12 9v5" />
+                    <path d="M12 17h.01" />
+                  </svg>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-900">
+                    Looks like the herd wandered off
+                  </h3>
+
+                  ```
+                  <p className="mt-1 text-sm leading-relaxed text-gray-600">
+                    We are currently having difficulties finding the animals.
+                    Please try again later and we will have them rounded up.
+                  </p>
+                  ```
+
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 text-left">
+                {featuredAnimals.map(fa => (
+                  <AnimalCard
+                    key={fa.id}
+                    animal={fa}
+                  />
+                ))}
+              </div>
+            )}
+
+
           </div>
         </div>
       </section>
-      
+
     </main>
   );
 }
