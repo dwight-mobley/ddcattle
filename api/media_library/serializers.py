@@ -3,8 +3,7 @@ from .models import AnimalMedia
 
 class MediaLibrarySerializer(serializers.ModelSerializer):
     uploaded_by = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    url = serializers.SerializerMethodField()
-       
+    url = serializers.SerializerMethodField()       
     class Meta:
         model = AnimalMedia
         fields = [
@@ -19,5 +18,5 @@ class MediaLibrarySerializer(serializers.ModelSerializer):
             "uploaded_at",                       
         ]
        
-        def get_url(self, obj):
-            return obj.get_url()
+    def get_url(self, obj):
+        return obj.get_url()

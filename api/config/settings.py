@@ -28,7 +28,10 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-=1$^=+n#ct1%&dlxqr#*i*j5&a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = ['ddcattle.onrender.com']
+ALLOWED_HOSTS = [
+    'ddcattle.onrender.com',
+    'localhost',
+]
 
 
 # Application definition

@@ -3,13 +3,15 @@ from animals.models.animal import Animal
 from animals.models.dog import Dog, DogBreed
 from animals.models.horse import Horse, HorseBreed
 from animals.models.cattle import CattleDetails
+from media_library.serializers import MediaLibrarySerializer
 from media_library.models import AnimalMedia
 from medical.models import MedicalRecord
 
-class MediaSerializer(serializers.ModelSerializer):
+class MediaSerializer(MediaLibrarySerializer):    
     class Meta:
         model = AnimalMedia
-        fields = ['id', 'file', 'description', 'media_type']
+        fields = ['id', 'description', 'media_type', 'url']
+   
 
 class MedicalRecordSerializer(serializers.ModelSerializer):
     class Meta:
@@ -62,7 +64,7 @@ class DogBreedSerializer(serializers.ModelSerializer):
         
 # --- BASE SERIALIZERS ---
 class BaseListAnimalSerializer(serializers.ModelSerializer):
-    profile_image = serializers.ImageField(source='profile_image.file', read_only=True, allow_null=True)
+    profile_image = serializers.SerializerMethodField()
     created_by = serializers.HiddenField(default=serializers.CurrentUserDefault())
     age = serializers.ReadOnlyField()
     sex = serializers.CharField(required=False, allow_null=True, allow_blank=True)
@@ -70,6 +72,11 @@ class BaseListAnimalSerializer(serializers.ModelSerializer):
         model = Animal       
         fields = '__all__'
 
+    def get_profile_image(self, obj):
+        if not obj.profile_image:
+            return None
+        return obj.profile_image.get_url()
+    
     def to_representation(self, instance):
         # 1. Get base animal data
         data = super().to_representation(instance)
