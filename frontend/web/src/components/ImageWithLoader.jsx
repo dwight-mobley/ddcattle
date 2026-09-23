@@ -1,9 +1,11 @@
 import { useState } from "react";
 import Loader from "./Loader";
+import AnimalImage from "./AnimalImage";
 
 export default function ImageWithLoader({
   src,
   alt = "",
+  size = "gallery",
   className = "",
   ...props
 }) {
@@ -19,9 +21,10 @@ export default function ImageWithLoader({
       )}
 
       {/* Image */}
-      <img
+      <AnimalImage
         src={src}
         alt={alt}
+        size={size}
         onLoad={() => setLoading(false)}
         onError={() => setLoading(false)}
         className={`

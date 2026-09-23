@@ -37,7 +37,7 @@ export default function AnimalDetails() {
       <header className="relative w-full h-[60vh] bg-saddle-brown">
         <div className="absolute inset-0">
           <ImageWithLoader
-            src={animal.profile_image}
+            src={animal.profile_image}            
             alt={animal.name}
             className="w-full h-full object-cover opacity-80 mix-blend-overlay"
           />
@@ -259,14 +259,14 @@ export default function AnimalDetails() {
                 >
                   {item.media_type === 'image' ? (
                     <ImageWithLoader
-                      src={item.file}
-                      alt={item.description}
+                      src={item.url}
+                      size='thumbnail'
+                      alt={item.description}                      
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (
                     <VideoWithLoader
-                      src={item.file}
-                      poster={item.file}
+                      src={item.url}                      
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   )}

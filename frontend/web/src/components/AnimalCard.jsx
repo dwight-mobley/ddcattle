@@ -11,6 +11,7 @@ export const AnimalCard = ({ animal }) => {
         {animal.profile_image ? (
           <ImageWithLoader
             src={animal.profile_image} 
+            size="card"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
             alt={`${animal.name} profile`}
           />
