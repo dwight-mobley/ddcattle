@@ -1,6 +1,8 @@
 import { useGetAnimalsQuery } from "../features/api/animalApi";
 import { useMemo, useState } from "react";
 import { AnimalCard } from "../components/AnimalCard";
+import Loader from "../components/Loader";
+import AnimalResponseNotificationError from "../components/AnimalResponseNotificationError";
 
 const speciesLabels = {
     horse: "Horses",
@@ -33,8 +35,8 @@ function FilterButton({ active, onClick, children }) {
             type="button"
             onClick={onClick}
             className={`rounded-full px-4 py-2 text-sm font-medium transition ${active
-                    ? "bg-saddle-brown text-white"
-                    : "bg-white text-charcoal/65 ring-1 ring-saddle-brown/10 hover:bg-saddle-brown/5 hover:text-saddle-brown"
+                ? "bg-saddle-brown text-white"
+                : "bg-white text-charcoal/65 ring-1 ring-saddle-brown/10 hover:bg-saddle-brown/5 hover:text-saddle-brown"
                 }`}
         >
             {children}
@@ -66,7 +68,7 @@ function EmptyState({ search, onClear }) {
 }
 
 export default function TheBarn() {
-    const { data: animals=[], isLoading, isError } = useGetAnimalsQuery();
+    const { data: animals = [], isLoading, isError } = useGetAnimalsQuery();
 
     const [species, setSpecies] = useState("all");
     const [status, setStatus] = useState("active");
@@ -90,17 +92,11 @@ export default function TheBarn() {
         });
     }, [animals, species, status, search]);
 
-    if (isLoading) {
-        return <p>Loading...</p>;
-    }
 
-    if (isError) {
-        return <p>Error loading animals.</p>;
-    }
 
     const species_options = Array.from(new Set(animals.map(animal => animal.species)));
     return (
-        <main className="min-h-screen bg-desert-sand">          
+        <main className="min-h-screen bg-desert-sand">
             {/* Header */}
             <section className="border-b border-saddle-brown/10 bg-desert-sand">
                 <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24">
@@ -166,7 +162,7 @@ export default function TheBarn() {
                         ))}
                     </div>
 
-                  
+
                 </div>
 
                 {/* Count */}
@@ -179,22 +175,30 @@ export default function TheBarn() {
                 </div>
 
                 {/* Grid */}
-                {filteredAnimals.length > 0 ? (
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {filteredAnimals.map((animal) => (
-                            <AnimalCard key={animal.id} animal={animal} />
-                        ))}
-                    </div>
-                ) : (
-                    <EmptyState
-                        search={search}
-                        onClear={() => {
-                            setSearch("");
-                            setSpecies("all");
-                            setStatus("all");
-                        }}
-                    />
-                )}
+                <div className="flex justify-center items-center">
+                    {isLoading ? (
+                        <Loader fullScreen={false} />
+                    ) : isError ? (
+                        <AnimalResponseNotificationError />
+                    ) :
+                        filteredAnimals.length > 0 ? (
+                            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                {filteredAnimals.map((animal) => (
+                                    <AnimalCard key={animal.id} animal={animal} />
+                                ))}
+                            </div>
+                        ) : (
+                            <EmptyState
+                                search={search}
+                                onClear={() => {
+                                    setSearch("");
+                                    setSpecies("all");
+                                    setStatus("all");
+                                }}
+                            />
+                        )}
+                </div>
+
             </section>
         </main>
     );
