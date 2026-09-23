@@ -75,7 +75,21 @@ CORS_ALLOWED_ORIGINS = [
   
 ]
 
-
+# Connect Django to Render's Key Value store in production
+if os.environ.get('RENDER') or not DEBUG:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": os.environ.get("REDIS_URL"),
+        }
+    }
+else:
+    # Fallback to local memory caching when testing locally
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
 
 # Django REST Framework
 REST_FRAMEWORK = {
@@ -85,6 +99,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
             'anon': '5/hour',  # 5 inquiries per hour per IP
         },
+    'NUM_PROXIES': 1, 
 }
 # Simple JWT Configuration
 from datetime import timedelta
