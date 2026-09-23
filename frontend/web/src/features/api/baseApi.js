@@ -3,9 +3,11 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // TODO: Update these imports to match your actual file structure
 import { setCredentials, logOut } from '../auth/authSlice';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 // 1. Create the standard baseQuery with token injection
 const baseQuery = fetchBaseQuery({ 
-  baseUrl: 'http://localhost:8000/api/',
+  baseUrl: `${API_URL}/api/`,
   prepareHeaders: (headers, { getState }) => {
     // Access the token from your Redux state
     const token = getState().auth.accessToken;
