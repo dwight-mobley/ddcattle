@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "marketplace",
     "audit",
     "accounts",
+    "reminders",
     "anymail",
 ]
 
