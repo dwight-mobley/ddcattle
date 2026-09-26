@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 from animals.models.animal import Animal
 from medical.models import MedicalRecord
@@ -88,9 +89,10 @@ class ReminderCompletion(models.Model):
         on_delete=models.CASCADE,
         related_name="completions",
     )
+    
 
     completed_at = models.DateTimeField(
-        auto_now_add=True,
+        default=timezone.now,
     )
 
     completed_by = models.ForeignKey(
@@ -101,6 +103,10 @@ class ReminderCompletion(models.Model):
 
     notes = models.TextField(
         blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
     )
 
     class Meta:
