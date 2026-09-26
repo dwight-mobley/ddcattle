@@ -149,6 +149,7 @@ class ReminderSerializer(serializers.ModelSerializer):
                 })
 
         # Validate medical reminder settings
+        medical_provided = "medical_config" in attrs
         medical_data = attrs.get("medical_config")
 
         animal = attrs.get(
@@ -156,19 +157,36 @@ class ReminderSerializer(serializers.ModelSerializer):
             getattr(self.instance, "animal", None),
         )
 
-        if (
-            medical_data
-            and medical_data.get(
-                "create_record_on_completion",
-                True,
-            )
-            and animal is None
-        ):
+        creates_medical_record = False
+
+        if medical_provided:
+            if medical_data is not None:
+                creates_medical_record = medical_data.get(
+                    "create_record_on_completion",
+                    True,
+                )
+        else:
+            if self.instance is not None:
+                try:
+                    creates_medical_record = (
+                        self.instance
+                        .medical_config
+                        .create_record_on_completion
+                    )
+                except MedicalReminder.DoesNotExist:
+                    creates_medical_record = False
+
+        if creates_medical_record and animal is None:
             raise serializers.ValidationError({
                 "animal":
                     "An animal is required when a reminder "
                     "creates a medical record."
             })
+
+        # Clear recurrence settings when the reminder is not recurring
+        if not recurring:
+            attrs["recurrence_interval"] = None
+            attrs["recurrence_unit"] = None
 
         return attrs
 
@@ -191,6 +209,8 @@ class ReminderSerializer(serializers.ModelSerializer):
         return reminder
 
     def update(self, instance, validated_data):
+        medical_provided = "medical_config" in validated_data
+
         medical_data = validated_data.pop(
             "medical_config",
             None,
@@ -201,10 +221,16 @@ class ReminderSerializer(serializers.ModelSerializer):
             validated_data,
         )
 
-        if medical_data is not None:
-            MedicalReminder.objects.update_or_create(
-                reminder=instance,
-                defaults=medical_data,
-            )
+        if medical_provided:
+            if medical_data is None:
+                MedicalReminder.objects.filter(
+                    reminder=instance
+                ).delete()
+
+            else:
+                MedicalReminder.objects.update_or_create(
+                    reminder=instance,
+                    defaults=medical_data,
+                )
 
         return instance
