@@ -11,10 +11,12 @@ export const Login = () => {
     
     // 1. Check for token to verify logged-in status
     const token = useSelector(selectCurrentToken);
-    if(token){
-         // Redirect the user to your dashboard or animal list here
-          return <Navigate to="/" />;
-    }
+  
+    useEffect(() => {
+        if (token) {
+            navigate('/admin/animals');
+        }
+    }, [token, navigate]);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
@@ -39,8 +41,8 @@ export const Login = () => {
 
             setUsername('');
             setPassword('');
-
-            return <Navigate to="/" />;
+            
+            navigate('/admin/animals');
 
         } catch (err) {
             if (err.status === 401) {
