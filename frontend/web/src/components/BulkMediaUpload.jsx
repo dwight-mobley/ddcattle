@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 // Adjust these import paths to match your project structure
 import { useGetAnimalsQuery } from '../features/api/animalApi';
-import { useUploadMediaMutation } from '../features/media/mediaApiSlice';
+import { useUploadMediaMutation } from '../features/api/mediaApiSlice';
 
 export default function BulkMediaUpload() {
     const fileInputRef = useRef(null);

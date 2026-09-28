@@ -2,6 +2,9 @@ import RanchHome from './pages/Home';
 import AnimalsAdmin from './pages/admin/AnimalsAdmin';
 import AnimalCreate from './pages/admin/AnimalCreate';
 import AnimalEdit from './pages/admin/AnimalEdit';
+import RemindersAdmin from './pages/admin/RemindersAdmin';
+import ReminderCreate from './pages/admin/ReminderCreate';
+import ReminderEdit from './pages/admin/ReminderEdit';
 import BulkMediaUpload from './components/BulkMediaUpload';
 import MainLayout from './components/layout/MainLayout';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -14,70 +17,30 @@ import Login from './pages/Login';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Loading from './components/Loader';
 
-
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <MainLayout />,
-    errorElement: <ErrorPage />,
-    loadingElement: <Loading />, 
-    children: [
-      {
-        index: true,
-        element: <RanchHome />,
-       
-      },
-      {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "about",
-        element: <About />,
-      },
-      {
-        path: "contact",
-        element: <Contact />,
-      },
-      {
-        path: "barn",
-        element: <TheBarn />,
-      },
-      {
-        path: "animals/:slug",
-        element: <AnimalDetails />,
-      },
-    ],
-  },
-  {
-    path:'/admin',
-    element: <DashboardLayout />, 
-    children: [
-      {
-        path:'animals',   
-        element: <AnimalsAdmin />,        
-      },
-      {
-        path: 'animals/new',
-        element: <AnimalCreate />,
-      },
-      {
-        path: 'animals/:slug/edit',
-        element: <AnimalEdit />,
-      },
-      {
-        path: 'media',
-        element: <BulkMediaUpload />,
-      }
-    ]
-  }
-
-]); 
-
-function App() {
-  return (
-    <RouterProvider router={router} />
-  );
-}
-
+    {
+        path: '/', element: <MainLayout />, errorElement: <ErrorPage />, loadingElement: <Loading />,
+        children: [
+            { index: true, element: <RanchHome /> },
+            { path: 'login', element: <Login /> },
+            { path: 'about', element: <About /> },
+            { path: 'contact', element: <Contact /> },
+            { path: 'barn', element: <TheBarn /> },
+            { path: 'animals/:slug', element: <AnimalDetails /> },
+        ],
+    },
+    {
+        path: '/admin', element: <DashboardLayout />,
+        children: [
+            { path: 'animals', element: <AnimalsAdmin /> },
+            { path: 'animals/new', element: <AnimalCreate /> },
+            { path: 'animals/:slug/edit', element: <AnimalEdit /> },
+            { path: 'reminders', element: <RemindersAdmin /> },
+            { path: 'reminders/new', element: <ReminderCreate /> },
+            { path: 'reminders/:id/edit', element: <ReminderEdit /> },
+            { path: 'media', element: <BulkMediaUpload /> },
+        ],
+    },
+]);
+function App() { return <RouterProvider router={router} />; }
 export default App;
