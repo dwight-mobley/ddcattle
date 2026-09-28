@@ -64,7 +64,27 @@ export default function MediaAdmin() {
     const [notice, setNotice] = useState('');
     const heading = useRef(null);
     // Local filtering avoids relying on unconfirmed backend filter configuration.
-    const { currentData: data, isFetching, error, refetch } = useGetMediaQuery({ page });
+    const ordering = {
+    newest: '-uploaded_at,-id',
+    oldest: 'uploaded_at,id',
+    order: 'sort_order,id',
+}[sort];
+
+const {
+    currentData: data,
+    isFetching,
+    error,
+    refetch,
+} = useGetMediaQuery({
+    page,
+    ordering,
+    ...(animal ? { animal } : {}),
+    ...(type ? { media_type: type } : {}),
+    ...(visibility
+        ? { public: visibility === 'public' ? 'true' : 'false' }
+        : {}),
+    ...(search.trim() ? { search: search.trim() } : {}),
+});
     const { data: animalsData, isError: animalsError } = useGetAnimalsQuery();
     const animals = rowsOf(animalsData);
     const media = rowsOf(data);
@@ -72,54 +92,75 @@ export default function MediaAdmin() {
     const names = new Map(animals.map(item => [String(item.id), item.name]));
     media.forEach(item => { if (item.animal && !names.has(animalId(item))) names.set(animalId(item), item.animal_name || item.animal?.name || `Animal #${animalId(item)}`); });
     const nameOf = item => names.get(animalId(item)) || 'Unassigned';
-    const filtered = media.filter(item => (!animal || animalId(item) === animal) && (!type || item.media_type === type) && (!visibility || Boolean(item.public) === (visibility === 'public')) && `${item.caption || ''} ${item.description || ''} ${nameOf(item)}`.toLowerCase().includes(search.toLowerCase())).sort((a, b) => sort === 'order' ? (a.sort_order || 0) - (b.sort_order || 0) : sort === 'oldest' ? (Date.parse(a.uploaded_at) || 0) - (Date.parse(b.uploaded_at) || 0) : (Date.parse(b.uploaded_at) || 0) - (Date.parse(a.uploaded_at) || 0));
-    function reset() { setAnimal(''); setType(''); setVisibility(''); setSearch(''); setSort('newest'); }
+    const filtered = media;
+    function reset() {
+    setAnimal('');
+    setType('');
+    setVisibility('');
+    setSearch('');
+    setSort('newest');
+    setPage(1);
+}
     function deleted(item) {
         setDialog(null); setNotice(`${item.caption || 'Media item'} deleted.`);
         if (media.length === 1 && page > 1) setPage(value => value - 1);
         heading.current?.focus();
     }
+
+    function changeFilter(setter) {
+    return (event) => {
+        setter(event.target.value);
+        setPage(1);
+    };
+}
+    
     return <div className="space-y-6">
         <header className="flex flex-wrap items-center justify-between gap-4"><div><h2 ref={heading} tabIndex={-1} className="font-serif text-2xl font-bold text-saddle-brown">Media Library</h2><p className="mt-1 text-sm text-charcoal/70">Browse and manage photos, videos, and documents.</p></div><Link to="/admin/media/upload" className="rounded-lg bg-saddle-brown px-4 py-2 text-sm font-medium text-desert-sand hover:bg-saddle-brown/90">+ Upload Media</Link></header>
         {notice && <p role="status" className="rounded-lg bg-sage/20 p-3 text-sm text-saddle-brown">{notice}</p>}
         {animalsError && <p className="text-sm text-rust">Animal names could not be loaded. Available media can still be managed using animal IDs.</p>}
         <div className="rounded-[var(--radius-xl)] border border-saddle-brown/10 bg-white p-4 space-y-4">
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <label className="text-sm text-saddle-brown">Animal<select className={input} value={animal} onChange={event => setAnimal(event.target.value)}><option value="">All animals</option>{[...names].sort((a, b) => a[1].localeCompare(b[1])).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
-                <label className="text-sm text-saddle-brown">Media type<select className={input} value={type} onChange={event => setType(event.target.value)}><option value="">All media types</option><option value="image">Images</option><option value="video">Videos</option><option value="document">Documents</option></select></label>
-                <label className="text-sm text-saddle-brown">Visibility<select className={input} value={visibility} onChange={event => setVisibility(event.target.value)}><option value="">All visibility</option><option value="public">Public</option><option value="private">Private</option></select></label>
-                <label className="text-sm text-saddle-brown">Search<input type="search" className={input} placeholder="Caption, description, or animal" value={search} onChange={event => setSearch(event.target.value)} /></label>
-                <label className="text-sm text-saddle-brown">Sort<select className={input} value={sort} onChange={event => setSort(event.target.value)}><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="order">Display order</option></select></label>
+                <label className="text-sm text-saddle-brown">Animal<select className={input} value={animal} onChange={changeFilter(setAnimal)}><option value="">All animals</option>{[...names].sort((a, b) => a[1].localeCompare(b[1])).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
+                <label className="text-sm text-saddle-brown">Media type<select className={input} value={type} onChange={changeFilter(setType)}><option value="">All media types</option><option value="image">Images</option><option value="video">Videos</option><option value="document">Documents</option></select></label>
+                <label className="text-sm text-saddle-brown">Visibility<select className={input} value={visibility} onChange={changeFilter(setVisibility)}><option value="">All visibility</option><option value="public">Public</option><option value="private">Private</option></select></label>
+                <label className="text-sm text-saddle-brown">Search<input type="search" className={input} placeholder="Caption, description, or animal" value={search} onChange={changeFilter(setSearch)} /></label>
+                <label className="text-sm text-saddle-brown">Sort<select className={input} value={sort} onChange={changeFilter(setSort)}><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="order">Display order</option></select></label>
                 <div className="flex items-end gap-2"><button className={button} onClick={reset}>Clear filters</button><button className={button} onClick={refetch} disabled={isFetching}>Refresh</button></div>
             </div>
-            {paginated && <p className="text-sm text-charcoal/70">Filters, search, and sorting apply to this page. Browse other pages for more media.</p>}
+            {paginated && <p className="text-sm text-charcoal/70">
+    Filters and search cover the entire library.
+    Results are shown {media.length} at a time.
+</p>}
         </div>
         {error && <div role="alert" className="rounded-lg bg-rust/10 p-4 text-rust"><p>{errorText(error)}</p><button onClick={refetch} className={`${button} mt-3`}>Try again</button></div>}
         {isFetching && <p role="status" className="text-saddle-brown">Loading media…</p>}
-        {data && <><p className="text-sm text-charcoal/70">Showing {filtered.length} of {media.length} items{paginated ? ` on page ${page}` : ''}.</p>
+        {data && <><p className="text-sm text-charcoal/70">
+    Showing {media.length} of {data.count ?? media.length} matching
+    items · Page {page}
+</p>
             {!filtered.length ?
                 <div className="rounded-[var(--radius-xl)] border border-saddle-brown/10 bg-white p-10 text-center">
                     <h3 className="font-serif text-lg font-bold text-saddle-brown">{media.length ? 'No matching media' : 'No media on this page'}</h3>
                     <p className="mt-2 text-sm text-charcoal/70">{media.length ? 'Try clearing your filters.' : 'Upload files to add them to the library.'}</p>
-                    </div> 
-                : 
+                </div>
+                :
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {filtered.map(item => <article key={item.id} className="overflow-hidden rounded-[var(--radius-xl)] border border-saddle-brown/10 bg-white shadow-sm">
-                    <button className="block h-44 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-saddle-brown" aria-label={`Preview ${item.caption || `media ${item.id}`}`} onClick={() => setDialog({ item, mode: 'view' })}>
-                        <Thumbnail key={item.url} item={item} />
+                        <button className="block h-44 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-saddle-brown" aria-label={`Preview ${item.caption || `media ${item.id}`}`} onClick={() => setDialog({ item, mode: 'view' })}>
+                            <Thumbnail key={item.url} item={item} />
                         </button>
                         <div className="space-y-2 p-4">
                             <h3 className="font-serif font-bold text-saddle-brown">{nameOf(item)}</h3>
                             <p className="truncate text-sm text-charcoal" title={item.caption || ''}>{item.caption || 'No caption'}</p>
                             <p className="text-xs text-charcoal/70">{item.public ? 'Public' : 'Private'} · {item.media_type || 'Media'}</p>
                             <div className="flex justify-between border-t border-saddle-brown/10 pt-3">
-                            <button onClick={() => setDialog({ item, mode: 'view' })} className="text-sm font-medium text-saddle-brown underline" aria-label={`View ${item.caption || `media ${item.id}`}`}>View</button>
-                            <button onClick={() => { setNotice(''); setDialog({ item, mode: 'delete' }); }} className="text-sm font-medium text-rust hover:underline" aria-label={`Delete ${item.caption || `media ${item.id}`}`}>Delete</button>
+                                <button onClick={() => setDialog({ item, mode: 'view' })} className="text-sm font-medium text-saddle-brown underline" aria-label={`View ${item.caption || `media ${item.id}`}`}>View</button>
+                                <button onClick={() => { setNotice(''); setDialog({ item, mode: 'delete' }); }} className="text-sm font-medium text-rust hover:underline" aria-label={`Delete ${item.caption || `media ${item.id}`}`}>Delete</button>
                             </div>
-                            </div>
-                            </article>
-                        )}
-                            </div>}
+                        </div>
+                    </article>
+                    )}
+                </div>}
             {paginated && <nav aria-label="Media pages" className="flex items-center justify-center gap-4"><button className={button} disabled={!data.previous || isFetching} onClick={() => setPage(value => Math.max(1, value - 1))}>Previous</button><span className="text-sm">Page {page}</span><button className={button} disabled={!data.next || isFetching} onClick={() => setPage(value => value + 1)}>Next</button></nav>}
         </>}
         {dialog && <MediaDialog key={`${dialog.mode}-${dialog.item.id}`} {...dialog} animalName={nameOf(dialog.item)} onClose={() => setDialog(null)} onDeleted={deleted} />}

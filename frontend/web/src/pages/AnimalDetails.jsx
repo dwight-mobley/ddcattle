@@ -4,6 +4,8 @@ import { useGetAnimalBySlugQuery } from '../features/api/animalApi';
 import ImageWithLoader from '../components/ImageWithLoader';
 import VideoWithLoader from '../components/VideoWithLoader';
 import InquiryModal from '../components/InquiryModal';
+import ErrorPage from './Error';
+import Loader from '../components/Loader';
 export default function AnimalDetails() {
   const { slug } = useParams();
 
@@ -18,12 +20,15 @@ export default function AnimalDetails() {
   const { data: animal, isLoading, error } = useGetAnimalBySlugQuery(slug);
 
   if (isLoading) {
-    return <p className="text-center py-24 text-saddle-brown font-serif text-xl">Loading...</p>;
-  }
+    return <Loader/>;
+  } 
 
-  if (error || !animal) {
+  if (error ) {
+    if(error?.status === 404){
+      return <ErrorPage/>;
+    }
     return <p className="text-center py-24 text-rust font-serif text-xl">Error loading animal details.</p>;
-  }
+  } 
 
   
   // Slice the media array for performance optimization
