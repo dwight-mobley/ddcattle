@@ -2,11 +2,13 @@ import React, { useState, useRef } from 'react';
 // Adjust these import paths to match your project structure
 import { useGetAnimalsQuery } from '../features/api/animalApi';
 import { useUploadMediaMutation } from '../features/api/mediaApiSlice';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function BulkMediaUpload() {
     const fileInputRef = useRef(null);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [uploadProgress, setUploadProgress] = useState({});
+    const navigate = useNavigate();
     
     // RTK Query Hooks
     const { data: animals = [], isLoading: isLoadingAnimals } = useGetAnimalsQuery();
@@ -88,7 +90,10 @@ export default function BulkMediaUpload() {
     const isSubmitDisabled = isUploading || selectedFiles.length === 0 || !meta.animal;
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-saddle-brown/10 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-saddle-brown/10 overflow-hidden p-3">
+            <div className="px-6">
+                <button onClick={() => navigate(-1)} className="rounded bg-rust p-3 text-white hover:underline hover:bg-rust/70 hover:text-rust/90 cursor-pointer transition-colors duration-200">Go Back</button>
+            </div>
             <div className="border-b border-saddle-brown/10 bg-desert-sand/30 px-6 py-4">
                 <h2 className="text-lg font-bold text-saddle-brown">Batch Upload Media</h2>
                 <p className="text-sm text-charcoal/70">Upload multiple files and apply identical metadata to all.</p>

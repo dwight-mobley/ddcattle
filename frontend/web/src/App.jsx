@@ -5,6 +5,7 @@ import AnimalEdit from './pages/admin/AnimalEdit';
 import RemindersAdmin from './pages/admin/RemindersAdmin';
 import ReminderCreate from './pages/admin/ReminderCreate';
 import ReminderEdit from './pages/admin/ReminderEdit';
+import MediaAdmin from './pages/admin/MediaAdmin';
 import BulkMediaUpload from './components/BulkMediaUpload';
 import MainLayout from './components/layout/MainLayout';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -38,9 +39,11 @@ const router = createBrowserRouter([
             { path: 'reminders', element: <RemindersAdmin /> },
             { path: 'reminders/new', element: <ReminderCreate /> },
             { path: 'reminders/:id/edit', element: <ReminderEdit /> },
-            { path: 'media', element: <BulkMediaUpload /> },
+            { path: 'media', element: <MediaAdmin /> },
+            { path: 'media/upload', element: <BulkMediaUpload /> },
         ],
     },
 ]);
 function App() { return <RouterProvider router={router} />; }
 export default App;
+
