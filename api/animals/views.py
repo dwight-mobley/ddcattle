@@ -40,13 +40,7 @@ class BaseAnimalViewSet(viewsets.ModelViewSet):
             qs = qs.filter(featured=featured)
             
         if self.action == 'list':
-            qs = qs.select_related('profile_image')
-        elif self.action == 'retrieve':
-            ordered_media = Prefetch(
-                'media', 
-                queryset=AnimalMedia.objects.all().order_by('-media_type')
-            )
-            qs = qs.select_related('profile_image').prefetch_related(ordered_media, 'medical_records')
+            qs = qs.select_related('profile_image')      
             
         return qs.order_by('-featured', 'name')   
 

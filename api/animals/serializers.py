@@ -144,17 +144,12 @@ class BaseListAnimalSerializer(serializers.ModelSerializer):
         
         return instance
 
-class BaseAnimalSerializer(BaseListAnimalSerializer):
-    media = MediaSerializer(many=True, read_only=True)
+class BaseAnimalSerializer(BaseListAnimalSerializer):   
     medical_records = MedicalRecordSerializer(many=True, read_only=True)
 
     class Meta:
         model = Animal
-        exclude = ['slug']
-
-    def get_media(self, obj):
-        media = obj.media.all().order_by('-media_type')
-        return MediaSerializer(media, many=True).data
+        exclude = ['slug']   
 
 
 
