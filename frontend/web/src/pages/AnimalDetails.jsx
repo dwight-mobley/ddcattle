@@ -6,12 +6,11 @@ import VideoWithLoader from '../components/VideoWithLoader';
 import InquiryModal from '../components/InquiryModal';
 import ErrorPage from './Error';
 import Loader from '../components/Loader';
+import MediaGallery from '../components/MediaGallery';
+
 export default function AnimalDetails() {
   const { slug } = useParams();
 
-  // State for pagination/load-more of media gallery
-  const [visibleMediaCount, setVisibleMediaCount] = useState(12);
-  const mediaIncrement = 12;
   // State For Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -19,21 +18,21 @@ export default function AnimalDetails() {
   // Fetch animal using your generalized RTK Query hook
   const { data: animal, isLoading, error } = useGetAnimalBySlugQuery(slug);
 
-  if (isLoading) {
-    return <Loader/>;
-  } 
+  if (isLoading || (!animal && isFetchingAnimal)) {
+    return <Loader />;
+}
 
   if (error ) {
     if(error?.status === 404){
       return <ErrorPage/>;
     }
     return <p className="text-center py-24 text-rust font-serif text-xl">Error loading animal details.</p>;
-  } 
+  }  
 
-  
-  // Slice the media array for performance optimization
-  const displayedMedia = animal.media ? animal.media.slice(0, visibleMediaCount) : [];
-  const hasMoreMedia = animal.media && visibleMediaCount < animal.media.length;
+  if (!animal) {
+    return <ErrorPage />;
+}
+ 
 
   return (
     <div className="min-h-screen bg-desert-sand font-sans text-charcoal selection:bg-rust selection:text-white pb-24">
@@ -245,52 +244,11 @@ export default function AnimalDetails() {
         </div>
 
         {/* Media Gallery Section */}
-        {animal.media && animal.media.length > 0 && (
-          <section className="pt-16 border-t border-sage/30">
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-12">
-              <h2 className="text-4xl font-serif text-saddle-brown">Gallery</h2>
-              <span className="text-sage font-semibold uppercase tracking-widest text-sm mt-2 sm:mt-0">
-                Showing {displayedMedia.length} of {animal.media.length} Items
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {displayedMedia.map((item) => (
-                <div
-                  key={item.id}
-                  className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-sage/20 bg-saddle-brown group ${
-                    item.media_type === 'video' ? 'col-span-1 sm:col-span-2 aspect-video' : 'aspect-square'
-                  }`}
-                >
-                  {item.media_type === 'image' ? (
-                    <ImageWithLoader
-                      src={item.url}
-                      size='thumbnail'
-                      alt={item.description}                      
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  ) : (
-                    <VideoWithLoader
-                      src={item.url}                      
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {hasMoreMedia && (
-              <div className="mt-12 flex justify-center">
-                <button
-                  onClick={() => setVisibleMediaCount(prev => prev + mediaIncrement)}
-                  className="px-10 py-4 border-2 border-saddle-brown text-saddle-brown font-bold rounded-xl hover:bg-saddle-brown hover:text-white transition-all duration-300 uppercase tracking-widest text-sm"
-                >
-                  Load More Media
-                </button>
-              </div>
-            )}
-          </section>
-        )}
+       <MediaGallery
+    key={animal.id}
+    animalId={animal.id}
+    animalName={animal.name}
+/>
 
       </main>
       <InquiryModal 
