@@ -84,14 +84,26 @@ class TestPushNotificationView(APIView):
             except WebPushException as exc:
                 failed += 1
 
-                # An expired subscription should no longer
-                # be used for future notifications.
-                if exc.response is not None and \
-                        exc.response.status_code in (404, 410):
-                    subscription.active = False
-                    subscription.save(
-                        update_fields=["active"]
+                print("WEB PUSH ERROR:", repr(exc))
+
+                if exc.response is not None:
+                    print(
+                        "PUSH RESPONSE STATUS:",
+                        exc.response.status_code
                     )
+                    print(
+                        "PUSH RESPONSE BODY:",
+                        exc.response.text
+                    )
+
+                    if exc.response.status_code in (404, 410):
+                        subscription.active = False
+                        subscription.save(
+                            update_fields=["active"]
+                        )
+            except Exception as exc:
+                failed += 1
+                print("UNEXPECTED PUSH ERROR:", repr(exc))
 
         return Response({
             "sent": sent,
