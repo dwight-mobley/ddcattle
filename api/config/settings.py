@@ -19,6 +19,10 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
+#Vapid keys for push notifications
+VAPID_PRIVATE_KEY = BASE_DIR / "private_key.pem"
+VAPID_SUBJECT = "mailto:dmobley0608@gmail.com"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
@@ -55,6 +59,7 @@ INSTALLED_APPS = [
     "accounts",
     "reminders",
     "anymail",
+    "notifications",
 ]
 
 MIDDLEWARE = [
