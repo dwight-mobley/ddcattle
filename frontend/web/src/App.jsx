@@ -17,6 +17,7 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Loading from './components/Loader';
+import RequireAdmin from './components/auth/RequireAuth';
 
 const router = createBrowserRouter([
     {
@@ -31,7 +32,7 @@ const router = createBrowserRouter([
         ],
     },
     {
-        path: '/admin', element: <DashboardLayout />,
+        path: '/admin', element:<RequireAdmin><DashboardLayout /></RequireAdmin>,
         children: [
             { path: 'animals', element: <AnimalsAdmin /> },
             { path: 'animals/new', element: <AnimalCreate /> },

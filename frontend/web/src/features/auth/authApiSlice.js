@@ -9,8 +9,14 @@ export const authApiSlice = baseApi.injectEndpoints({
         body: credentials,
       }),
     }),
+    getCurrentUser: builder.query({
+      query: () => ({
+        url: 'me/',
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
 // RTK Query automatically generates a React hook based on the endpoint name
-export const { useLoginMutation } = authApiSlice;
+export const { useLoginMutation, useGetCurrentUserQuery } = authApiSlice;

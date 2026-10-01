@@ -1,12 +1,12 @@
-export default function Loader({ fullScreen = true }) {
+export default function Loader({ fullScreen = true, h=24, w=24, text='2xl' }) {
   return (
     <div
       className={`
         flex items-center justify-center
-        ${fullScreen ? "fixed inset-0 z-50 bg-desert-sand" : "relative"}
+        ${fullScreen ? "fixed inset-0 z-50 bg-desert-sand" : " relative"}
       `}
     >
-      <div className="relative flex h-24 w-24 items-center justify-center">
+      <div className={`relative flex h-${h} w-${w} items-center justify-center`}>
         
         {/* Outer rotating ring */}
         <div
@@ -40,13 +40,13 @@ export default function Loader({ fullScreen = true }) {
         {/* Center mark */}
         <div className="relative flex items-center justify-center">
           <span
-            className="
+            className={`
               font-serif
-              text-2xl
+              text-${text}
               font-semibold
               tracking-wide
               text-saddle-brown
-            "
+            `}
           >
             DD
           </span>

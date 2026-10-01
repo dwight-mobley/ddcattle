@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import {  useDispatch } from "react-redux";
+import { useAuth } from "../../features/auth/useAuth";
 // Adjust this import path based on your folder structure
-import { selectCurrentToken, logOut } from "../../features/auth/authSlice";
+import {  logOut } from "../../features/auth/authSlice";
+
 import logo from "../../assets/ddcc-B7n0MI5M.png";
+import Loader from "../Loader";
 
 const links = [
   { name: "Home", path: "/" },
@@ -19,8 +22,7 @@ export default function Navbar() {
   const dispatch = useDispatch();
 
   // Check if a token exists in Redux to determine logged-in state
-  const token = useSelector(selectCurrentToken);
-  const isLoggedIn = !!token;
+  const {isAuthenticated, isAdmin, isLoading} = useAuth();
 
   const handleLogout = () => {
     dispatch(logOut());
@@ -31,6 +33,7 @@ export default function Navbar() {
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
+
 
   return (
     <header className="sticky top-0 z-50 border-b border-saddle-brown/10 bg-desert-sand/95 backdrop-blur-md">
@@ -79,7 +82,16 @@ export default function Navbar() {
 
           {/* Desktop Auth State */}
           <div className="ml-4 pl-4 border-l border-saddle-brown/20">
-            {isLoggedIn ? (
+            {isLoading ? (              
+                <Loader fullScreen={false} h={15} w={15} text="xs" />                         
+            ) : isAuthenticated && isAdmin ? (
+              <Link
+                to="/admin"
+                className="rounded-full border border-saddle-brown px-4 py-1.5 text-sm font-medium text-saddle-brown transition-colors hover:bg-saddle-brown hover:text-desert-sand"
+              >
+                Admin Dashboard
+              </Link>
+            ) : isAuthenticated && !isAdmin ? (
               <button
                 onClick={handleLogout}
                 className="rounded-full border border-saddle-brown px-4 py-1.5 text-sm font-medium text-saddle-brown transition-colors hover:bg-saddle-brown hover:text-desert-sand"
@@ -148,7 +160,17 @@ export default function Navbar() {
             
             {/* Mobile Auth State */}
             <div className="mt-4 pt-4 border-t border-saddle-brown/10">
-              {isLoggedIn ? (
+              {isLoading ? (
+                <Loader fullScreen={false} h={15} w={15} text="xs" />
+              ) : isAdmin ? (
+                <Link
+                  to="/admin"
+                  onClick={closeMobileMenu}
+                  className="block py-2 text-base font-medium text-saddle-brown hover:text-saddle-brown/80 transition-colors"
+                >
+                  Admin Panel
+                </Link>
+              ) : isLoggedIn ? (
                 <button
                   onClick={handleLogout}
                   className="block w-full text-left py-2 text-base font-medium text-rust hover:text-rust/80 transition-colors"

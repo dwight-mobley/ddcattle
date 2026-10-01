@@ -24,6 +24,9 @@ const authSlice = createSlice({
       if (accessToken) localStorage.setItem('accessToken', accessToken);
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
     },
+    setUser: (state, action) => {
+      state.user = action.payload;
+    },
     
     logOut: (state) => {
       // Clear Redux state
@@ -38,7 +41,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, logOut } = authSlice.actions;
+export const { setCredentials, setUser, logOut } = authSlice.actions;
 
 // Selectors for easy access in your components
 export const selectCurrentUser = (state) => state.auth.user;

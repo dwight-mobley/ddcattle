@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
 
+
 const sidebarNavigation = [
     { name: 'Overview', href: '/dashboard', icon: 'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z' },
     { name: 'Animals', href: '/admin/animals', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z' },
@@ -10,8 +11,9 @@ const sidebarNavigation = [
 ];
 
 export default function DashboardLayout() {
-    const location = useLocation();
+    const location = useLocation(); 
 
+   
     return (
         <div className="flex h-screen bg-desert-sand/30">
             {/* Sidebar */}
