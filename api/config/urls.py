@@ -22,6 +22,7 @@ from config.views import ContactFormView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api-auth/", include("rest_framework.urls")),
+    path("api/", include("accounts.urls")),
     path("api/", include("animals.urls")),
     path("api/", include("media_library.urls")),
     path("api/medical/", include("medical.urls")),
