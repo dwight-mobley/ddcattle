@@ -20,8 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 #Vapid keys for push notifications
-VAPID_PRIVATE_KEY = BASE_DIR / "private_key.pem"
-VAPID_SUBJECT = "mailto:dmobley0608@gmail.com"
+VAPID_PRIVATE_KEY = os.environ.get(
+    "VAPID_PRIVATE_KEY",
+    str(BASE_DIR / "private_key.pem"),
+)
+
+VAPID_SUBJECT = os.environ.get(
+    "VAPID_SUBJECT",
+    "mailto:your-email@example.com",
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/

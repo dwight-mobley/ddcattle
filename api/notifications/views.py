@@ -1,6 +1,10 @@
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from pywebpush import WebPushException
+from .services import send_push_notification
 
 from .models import PushSubscription
 from .serializers import PushSubscriptionSerializer
@@ -45,3 +49,51 @@ class PushSubscriptionViewSet(viewsets.ModelViewSet):
                 else status.HTTP_200_OK
             ),
         )
+
+class TestPushNotificationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        subscriptions = PushSubscription.objects.filter(
+            user=request.user,
+            active=True,
+        )
+
+        if not subscriptions.exists():
+            return Response(
+                {
+                    "detail": "No active push subscriptions found."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        sent = 0
+        failed = 0
+
+        for subscription in subscriptions:
+            try:
+                send_push_notification(
+                    subscription=subscription,
+                    title="DD Cattle Company",
+                    body="Push notifications are working!",
+                    url="/",
+                )
+
+                sent += 1
+
+            except WebPushException as exc:
+                failed += 1
+
+                # An expired subscription should no longer
+                # be used for future notifications.
+                if exc.response is not None and \
+                        exc.response.status_code in (404, 410):
+                    subscription.active = False
+                    subscription.save(
+                        update_fields=["active"]
+                    )
+
+        return Response({
+            "sent": sent,
+            "failed": failed,
+        })
