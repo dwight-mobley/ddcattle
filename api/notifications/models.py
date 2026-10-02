@@ -26,3 +26,54 @@ class PushSubscription(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.device_name or 'Device'}"
+
+class NotificationLog(models.Model):
+    class NotificationType(models.TextChoices):
+        REMINDER_UPCOMING = "reminder_upcoming", "Reminder Upcoming"
+        REMINDER_DUE = "reminder_due", "Reminder Due"
+        REMINDER_OVERDUE = "reminder_overdue", "Reminder Overdue"
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="notification_logs",
+    )
+
+    reminder = models.ForeignKey(
+        "reminders.Reminder",
+        on_delete=models.CASCADE,
+        related_name="notification_logs",
+    )
+
+    notification_type = models.CharField(
+        max_length=30,
+        choices=NotificationType.choices,
+    )
+
+    scheduled_date = models.DateField()
+
+    sent_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        ordering = ["-sent_at"]
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "user",
+                    "reminder",
+                    "notification_type",
+                    "scheduled_date",
+                ],
+                name="unique_reminder_notification",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.user} - "
+            f"{self.reminder} - "
+            f"{self.notification_type}"
+        )
