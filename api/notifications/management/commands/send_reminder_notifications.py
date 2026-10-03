@@ -1,3 +1,4 @@
+from collections import Counter, defaultdict
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
@@ -13,7 +14,7 @@ from reminders.models import Reminder
 
 
 class Command(BaseCommand):
-    help = "Send push notifications for active reminders."
+    help = "Send grouped push notifications for active reminders."
 
     def handle(self, *args, **options):
         today = timezone.localdate()
@@ -24,10 +25,17 @@ class Command(BaseCommand):
             .select_related("animal", "created_by")
         )
 
-        sent = 0
+        groups = defaultdict(list)
+
         skipped = 0
         failed = 0
+        pushes_sent = 0
+        reminders_logged = 0
 
+        #
+        # Step 1:
+        # Find reminders that need notifications and group them.
+        #
         for reminder in reminders:
             notification = self.get_notification(
                 reminder,
@@ -37,12 +45,8 @@ class Command(BaseCommand):
             if notification is None:
                 continue
 
-            notification_type, log_date, title, body = (
-                notification
-            )
+            notification_type, log_date = notification
 
-            # For now, reminders go to the user who
-            # created the reminder.
             user = reminder.created_by
 
             already_sent = NotificationLog.objects.filter(
@@ -56,14 +60,41 @@ class Command(BaseCommand):
                 skipped += 1
                 continue
 
+            key = (
+                user.id,
+                notification_type,
+                log_date,
+            )
+
+            groups[key].append(reminder)
+
+        #
+        # Step 2:
+        # Send one push for each group.
+        #
+        for (
+            user_id,
+            notification_type,
+            log_date,
+        ), grouped_reminders in groups.items():
+
             subscriptions = PushSubscription.objects.filter(
-                user=user,
+                user_id=user_id,
                 active=True,
             )
 
             if not subscriptions.exists():
-                skipped += 1
+                skipped += len(grouped_reminders)
                 continue
+
+            title = self.build_title(
+                notification_type,
+                len(grouped_reminders),
+            )
+
+            body = self.build_summary_body(
+                grouped_reminders,
+            )
 
             notification_sent = False
 
@@ -73,11 +104,11 @@ class Command(BaseCommand):
                         subscription=subscription,
                         title=title,
                         body=body,
-                        url=self.get_reminder_url(reminder),
+                        url="/reminders/",
                     )
 
                     notification_sent = True
-                    sent += 1
+                    pushes_sent += 1
 
                 except WebPushException as exc:
                     failed += 1
@@ -106,18 +137,30 @@ class Command(BaseCommand):
                         f"{subscription.pk}: {exc}"
                     )
 
+            #
+            # Only log the reminders if at least one
+            # device successfully received the push.
+            #
             if notification_sent:
-                NotificationLog.objects.create(
-                    user=user,
-                    reminder=reminder,
-                    notification_type=notification_type,
-                    scheduled_date=log_date,
+                NotificationLog.objects.bulk_create([
+                    NotificationLog(
+                        user_id=user_id,
+                        reminder=reminder,
+                        notification_type=notification_type,
+                        scheduled_date=log_date,
+                    )
+                    for reminder in grouped_reminders
+                ])
+
+                reminders_logged += len(
+                    grouped_reminders
                 )
 
         self.stdout.write(
             self.style.SUCCESS(
                 f"Finished. "
-                f"Sent: {sent}, "
+                f"Pushes sent: {pushes_sent}, "
+                f"Reminders logged: {reminders_logged}, "
                 f"Skipped: {skipped}, "
                 f"Failed: {failed}"
             )
@@ -129,11 +172,6 @@ class Command(BaseCommand):
                 NotificationLog.NotificationType
                 .REMINDER_UPCOMING,
                 reminder.due_date,
-                "Reminder Tomorrow",
-                self.build_body(
-                    reminder,
-                    "is due tomorrow",
-                ),
             )
 
         if reminder.due_date == today:
@@ -141,11 +179,6 @@ class Command(BaseCommand):
                 NotificationLog.NotificationType
                 .REMINDER_DUE,
                 reminder.due_date,
-                "Reminder Due Today",
-                self.build_body(
-                    reminder,
-                    "is due today",
-                ),
             )
 
         if reminder.due_date < today:
@@ -153,23 +186,58 @@ class Command(BaseCommand):
                 NotificationLog.NotificationType
                 .REMINDER_OVERDUE,
                 today,
-                "Overdue Reminder",
-                self.build_body(
-                    reminder,
-                    "is overdue",
-                ),
             )
 
         return None
 
-    def build_body(self, reminder, status):
-        if reminder.animal:
+    def build_title(
+        self,
+        notification_type,
+        count,
+    ):
+        reminder_word = (
+            "Reminder"
+            if count == 1
+            else "Reminders"
+        )
+
+        if (
+            notification_type
+            == NotificationLog.NotificationType
+            .REMINDER_UPCOMING
+        ):
             return (
-                f"{reminder.title} for "
-                f"{reminder.animal.name} {status}."
+                f"{count} {reminder_word} "
+                f"Due Tomorrow"
             )
 
-        return f"{reminder.title} {status}."
+        if (
+            notification_type
+            == NotificationLog.NotificationType
+            .REMINDER_DUE
+        ):
+            return (
+                f"{count} {reminder_word} "
+                f"Due Today"
+            )
 
-    def get_reminder_url(self, reminder):
-        return "/reminders/"
+        return (
+            f"{count} Overdue "
+            f"{reminder_word}"
+        )
+
+    def build_summary_body(self, reminders):
+        #
+        # Count reminders by their title.
+        #
+        counts = Counter(
+            reminder.title
+            for reminder in reminders
+        )
+
+        parts = [
+            f"{title} — {count}"
+            for title, count in counts.items()
+        ]
+
+        return " • ".join(parts)
