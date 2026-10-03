@@ -11,7 +11,7 @@ const sidebarNavigation = [
 
 export default function DashboardLayout() {
     const location = useLocation();
-
+  
     return (
         <div className="flex min-h-dvh flex-col md:h-screen md:flex-row bg-desert-sand/30">
             {/* Sidebar */}
