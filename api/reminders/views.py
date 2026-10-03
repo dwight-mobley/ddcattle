@@ -8,8 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Reminder, ReminderCompletion, MedicalReminder
-from .serializers import ReminderSerializer, CompleteReminderSerializer
+from .serializers import ReminderSerializer, CompleteReminderSerializer, BulkReminderSerializer
 
+from animals.models.animal import Animal
 from medical.models import MedicalRecord
 
 
@@ -47,6 +48,89 @@ class ReminderViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(
             created_by=self.request.user
+        )
+
+    @action(
+        detail=False,
+        methods=["post"],
+        url_path="bulk-create",
+    )
+    @transaction.atomic
+    def bulk_create(self, request):
+        bulk_serializer = BulkReminderSerializer(
+            data=request.data
+        )
+        bulk_serializer.is_valid(raise_exception=True)
+
+        data = bulk_serializer.validated_data
+
+        animal_ids = data.pop("animals")
+        medical_data = data.pop("medical", None)
+
+        animals = Animal.objects.filter(
+            id__in=animal_ids
+        )
+
+        animals_by_id = {
+            animal.id: animal
+            for animal in animals
+        }
+
+        missing_ids = [
+            animal_id
+            for animal_id in animal_ids
+            if animal_id not in animals_by_id
+        ]
+
+        if missing_ids:
+            raise serializers.ValidationError({
+                "animals": (
+                    "The following animal IDs do not exist: "
+                    + ", ".join(
+                        str(animal_id)
+                        for animal_id in missing_ids
+                    )
+                )
+            })
+
+        created_reminders = []
+
+        for animal_id in animal_ids:
+            animal = animals_by_id[animal_id]
+
+            reminder_data = {
+                **data,
+                "animal": animal.id,
+            }
+
+            if medical_data is not None:
+                reminder_data["medical"] = medical_data.copy()
+
+            reminder_serializer = ReminderSerializer(
+                data=reminder_data
+            )
+
+            reminder_serializer.is_valid(
+                raise_exception=True
+            )
+
+            reminder = reminder_serializer.save(
+                created_by=request.user
+            )
+
+            created_reminders.append(reminder)
+
+        response_serializer = ReminderSerializer(
+            created_reminders,
+            many=True,
+        )
+
+        return Response(
+            {
+                "count": len(created_reminders),
+                "reminders": response_serializer.data,
+            },
+            status=status.HTTP_201_CREATED,
         )
 
     @action(detail=True, methods=["post"])
@@ -168,3 +252,4 @@ class ReminderViewSet(viewsets.ModelViewSet):
             f"Unsupported recurrence unit: "
             f"{reminder.recurrence_unit}"
         )
+

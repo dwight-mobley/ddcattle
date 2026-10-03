@@ -234,3 +234,51 @@ class ReminderSerializer(serializers.ModelSerializer):
                 )
 
         return instance
+
+class BulkReminderSerializer(serializers.Serializer):
+    animals = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        allow_empty=False,
+    )
+
+    title = serializers.CharField(
+        max_length=200,
+    )
+
+    description = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default="",
+    )
+
+    reminder_type = serializers.ChoiceField(
+        choices=Reminder.ReminderType.choices,
+        default=Reminder.ReminderType.GENERAL,
+    )
+
+    due_date = serializers.DateField()
+
+    recurring = serializers.BooleanField(
+        default=False,
+    )
+
+    recurrence_interval = serializers.IntegerField(
+        required=False,
+        allow_null=True,
+        min_value=1,
+    )
+
+    recurrence_unit = serializers.ChoiceField(
+        choices=Reminder.RecurrenceUnit.choices,
+        required=False,
+        allow_null=True,
+    )
+
+    medical = MedicalReminderSerializer(
+        required=False,
+        allow_null=True,
+    )
+
+    def validate_animals(self, value):
+        # Remove duplicate IDs while preserving their order.
+        return list(dict.fromkeys(value))
