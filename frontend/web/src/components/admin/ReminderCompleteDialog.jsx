@@ -33,13 +33,13 @@ export default function ReminderCompleteDialog({ reminder, onClose, onCompleted 
         catch (err) { setError(errorText(err)); }
         finally { lock.current = false; }
     }
-    return <dialog ref={dialog} aria-labelledby="completion-title" onCancel={event => { event.preventDefault(); if (!lock.current) onClose(); }} className="m-auto max-h-[90vh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-[var(--radius-xl)] border border-saddle-brown/20 bg-desert-sand p-6 text-charcoal shadow-xl backdrop:bg-charcoal/40 backdrop:backdrop-blur-sm">
-        <h2 id="completion-title" className="font-serif text-xl font-bold text-saddle-brown">Complete {reminder.title}</h2>
+    return <dialog ref={dialog} aria-labelledby="completion-title" onCancel={event => { event.preventDefault(); if (!lock.current) onClose(); }} className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-xl overflow-y-auto rounded-[var(--radius-xl)] border border-saddle-brown/20 bg-desert-sand p-4 sm:p-6 text-charcoal shadow-xl backdrop:bg-charcoal/40 backdrop:backdrop-blur-sm">
+        <h2 id="completion-title" className="break-words font-serif text-xl font-bold text-saddle-brown">Complete {reminder.title}</h2>
         <p className="mt-2 mb-5 text-sm text-charcoal/70">{reminder.recurring ? 'The next due date will be based on when this was completed.' : 'Record the completion of this reminder.'}</p>
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={submit} className="min-w-0 space-y-4">
             <ErrorMessage>{error}</ErrorMessage>
-            <fieldset disabled={isLoading} className="space-y-4">
-                <label className="flex gap-2 items-center text-sm"><input type="checkbox" checked={backdate} onChange={event => setBackdate(event.target.checked)} />Use an earlier completion date</label>
+            <fieldset disabled={isLoading} className="min-w-0 space-y-4">
+                <label className="flex min-h-11 sm:min-h-0 gap-3 items-center text-sm"><input type="checkbox" className="h-5 w-5 shrink-0 sm:h-4 sm:w-4" checked={backdate} onChange={event => setBackdate(event.target.checked)} />Use an earlier completion date</label>
                 {backdate ? <Field label="Completed at (your local time) *"><input type="datetime-local" required name="completed_at" value={form.completed_at} max={localDateTime()} onChange={change} className={inputClasses} /></Field> : <p className="text-sm text-charcoal/70">The server will record the current time when you submit.</p>}
                 <Field label="Completion notes"><textarea name="notes" value={form.notes} onChange={change} rows={3} className={inputClasses} /></Field>
                 {createsRecord && <div className="border-t border-saddle-brown/10 pt-4 space-y-4">
@@ -48,7 +48,7 @@ export default function ReminderCompleteDialog({ reminder, onClose, onCompleted 
                     <Field label="Description"><textarea name="description" value={form.description} onChange={change} rows={3} className={inputClasses} /></Field>
                     <div className="grid gap-4 sm:grid-cols-2">{['veterinarian', 'clinic', 'medication', 'dosage'].map(name => <Field key={name} label={name.charAt(0).toUpperCase() + name.slice(1)}><input name={name} value={form[name]} onChange={change} className={inputClasses} /></Field>)}</div>
                 </div>}
-                <div className="flex justify-end gap-3 pt-4">
+                <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4">
                     <button type="button" onClick={onClose} className={secondaryClasses}>Cancel</button>
                     <button type="submit" className={primaryClasses}>{isLoading ? 'Completing…' : 'Complete Reminder'}</button>
                 </div>

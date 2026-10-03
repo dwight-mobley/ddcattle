@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import logo from "../assets/ddcc-B7n0MI5M.png";
 
 export default function About() {
+  console.log(
+  'VAPID public key:',
+  import.meta.env.VITE_VAPID_PUBLIC_KEY
+)
   return (
     <main className="bg-desert-sand text-charcoal">       
       {/* Hero */}

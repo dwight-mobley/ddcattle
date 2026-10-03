@@ -25,9 +25,9 @@ export default function AnimalEdit() {
     if (isError || !animal) return <div className="text-rust">Failed to load animal data.</div>;
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="w-full min-w-0 max-w-4xl mx-auto space-y-4 sm:space-y-6">
             <div>
-                <h2 className="font-serif text-2xl font-bold text-saddle-brown">Edit {animal.name}</h2>
+                <h2 className="break-words font-serif text-xl sm:text-2xl font-bold text-saddle-brown">Edit {animal.name}</h2>
                 <p className="text-charcoal/70 text-sm mt-1">Update the profile and status information.</p>
             </div>
             <AnimalForm 

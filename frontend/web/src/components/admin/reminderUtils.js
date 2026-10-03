@@ -34,4 +34,32 @@ export function reminderPayload(form) {
         medical: form.medical_enabled ? { record_type: form.record_type.trim(), create_record_on_completion: form.create_record_on_completion } : null,
     };
 }
+export function bulkReminderPayload(form) {
+    return {
+        animals: form.animals.map(Number),
+
+        title: form.title.trim(),
+        reminder_type: form.reminder_type,
+        description: form.description,
+        due_date: form.due_date,
+
+        recurring: form.recurring,
+
+        recurrence_interval: form.recurring
+            ? Number(form.recurrence_interval)
+            : null,
+
+        recurrence_unit: form.recurring
+            ? form.recurrence_unit
+            : null,
+
+        medical: form.medical_enabled
+            ? {
+                record_type: form.record_type.trim(),
+                create_record_on_completion:
+                    form.create_record_on_completion,
+            }
+            : null,
+    };
+}
 

@@ -18,6 +18,14 @@ export const reminderApi = baseApi.injectEndpoints({
             query: (body) => ({ url: 'reminders/', method: 'POST', body }),
             invalidatesTags: (result, error) => error ? [] : ['Reminder'],
         }),
+        bulkAddReminders: builder.mutation({
+            query: (body) => ({
+                url: 'reminders/bulk-create/',
+                method: 'POST',
+                body,
+            }),
+            invalidatesTags: (result, error) => error ? [] : ['Reminder'],
+        }),
         updateReminder: builder.mutation({
             query: ({ id, ...body }) => ({ url: `reminders/${id}/`, method: 'PATCH', body }),
             invalidatesTags: (result, error) => error ? [] : ['Reminder'],
@@ -35,5 +43,5 @@ export const reminderApi = baseApi.injectEndpoints({
 
 export const {
     useGetReminderOptionsQuery, useGetRemindersQuery, useGetReminderByIdQuery, useAddReminderMutation,
-    useUpdateReminderMutation, useDeleteReminderMutation, useCompleteReminderMutation,
+     useBulkAddRemindersMutation, useUpdateReminderMutation, useDeleteReminderMutation, useCompleteReminderMutation,
 } = reminderApi;

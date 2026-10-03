@@ -78,16 +78,16 @@ export default function AnimalForm({ initialData = {}, onSubmit, isLoading }) {
         onSubmit(cleanedData);
     };
 
-    const inputClasses = "w-full rounded-lg border border-saddle-brown/20 bg-white px-4 py-2 text-charcoal focus:border-sage focus:outline-none focus:ring-1 focus:ring-sage transition-colors";
+    const inputClasses = "w-full min-w-0 max-w-full min-h-11 sm:min-h-0 text-base rounded-lg border border-saddle-brown/20 bg-white px-4 py-2 text-charcoal focus:border-sage focus:outline-none focus:ring-1 focus:ring-sage transition-colors";
     const labelClasses = "block text-sm font-medium text-saddle-brown mb-1";
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-[var(--radius-xl)] shadow-sm border border-saddle-brown/10 space-y-8">
+        <form onSubmit={handleSubmit} className="min-w-0 bg-white p-4 sm:p-8 rounded-[var(--radius-xl)] shadow-sm border border-saddle-brown/10 space-y-6 sm:space-y-8">
 
             {/* BASE ANIMAL FIELDS */}
             <div>
                 <h3 className="text-lg font-serif font-bold text-saddle-brown mb-4 border-b border-saddle-brown/10 pb-2">Basic Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div className="md:col-span-2">
                         <label className={labelClasses}>Name *</label>
                         <input type="text" name="name" value={formData.name} onChange={handleChange} required className={inputClasses} />
@@ -155,7 +155,7 @@ export default function AnimalForm({ initialData = {}, onSubmit, isLoading }) {
                     <h3 className="text-lg font-serif font-bold text-saddle-brown mb-4 border-b border-saddle-brown/10 pb-2 capitalize">
                         {formData.species} Specifics
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
 
                         {formData.species === 'horse' && (
                             <>
@@ -226,9 +226,9 @@ export default function AnimalForm({ initialData = {}, onSubmit, isLoading }) {
                                     <label className={labelClasses}>Registration Number</label>
                                     <input type="text" name="registration_number" value={formData.registration_number || ''} onChange={handleChange} className={inputClasses} />
                                 </div>
-                                <div className="flex items-center mt-6">
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" name="spayed_neutered" checked={formData.spayed_neutered} onChange={handleChange} className="rounded text-saddle-brown focus:ring-sage" />
+                                <div className="flex items-center md:mt-6">
+                                    <label className="flex min-h-11 sm:min-h-0 items-center gap-3 sm:gap-2 cursor-pointer">
+                                        <input type="checkbox" name="spayed_neutered" checked={formData.spayed_neutered} onChange={handleChange} className="h-5 w-5 shrink-0 sm:h-4 sm:w-4 rounded text-saddle-brown focus:ring-sage" />
                                         <span className="text-sm font-medium text-charcoal">Spayed / Neutered</span>
                                     </label>
                                 </div>
@@ -266,18 +266,18 @@ export default function AnimalForm({ initialData = {}, onSubmit, isLoading }) {
             {/* SETTINGS & DESCRIPTION */}
             <div>
                 <h3 className="text-lg font-serif font-bold text-saddle-brown mb-4 border-b border-saddle-brown/10 pb-2">Additional Details</h3>
-                <div className="grid grid-cols-1 gap-6">
+                <div className="grid grid-cols-1 gap-4 sm:gap-6">
                     <div>
                         <label className={labelClasses}>Description / Notes</label>
                         <textarea name="description" rows="4" value={formData.description || ''} onChange={handleChange} className={inputClasses}></textarea>
                     </div>
-                    <div className="flex gap-6">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="featured" checked={formData.featured} onChange={handleChange} className="rounded text-saddle-brown focus:ring-sage" />
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-6">
+                        <label className="flex min-h-11 sm:min-h-0 items-center gap-3 sm:gap-2 cursor-pointer">
+                            <input type="checkbox" name="featured" checked={formData.featured} onChange={handleChange} className="h-5 w-5 shrink-0 sm:h-4 sm:w-4 rounded text-saddle-brown focus:ring-sage" />
                             <span className="text-sm font-medium text-charcoal">Featured Animal</span>
                         </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="public" checked={formData.public} onChange={handleChange} className="rounded text-saddle-brown focus:ring-sage" />
+                        <label className="flex min-h-11 sm:min-h-0 items-center gap-3 sm:gap-2 cursor-pointer">
+                            <input type="checkbox" name="public" checked={formData.public} onChange={handleChange} className="h-5 w-5 shrink-0 sm:h-4 sm:w-4 rounded text-saddle-brown focus:ring-sage" />
                             <span className="text-sm font-medium text-charcoal">Public Profile</span>
                         </label>
                     </div>
@@ -285,11 +285,11 @@ export default function AnimalForm({ initialData = {}, onSubmit, isLoading }) {
             </div>
 
             {/* ACTIONS */}
-            <div className="flex justify-end gap-4 pt-4 border-t border-saddle-brown/10">
-                <button type="button" onClick={() => navigate('/admin/animals')} className="px-5 py-2 text-sm font-medium text-charcoal bg-desert-sand border border-saddle-brown/20 rounded-lg hover:bg-sage/10 transition-colors">
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 pt-4 border-t border-saddle-brown/10">
+                <button type="button" onClick={() => navigate('/admin/animals')} className="w-full sm:w-auto min-h-11 sm:min-h-0 px-5 py-2 text-sm font-medium text-charcoal bg-desert-sand border border-saddle-brown/20 rounded-lg hover:bg-sage/10 transition-colors">
                     Cancel
                 </button>
-                <button type="submit" disabled={isLoading} className="px-5 py-2 text-sm font-medium text-desert-sand bg-saddle-brown rounded-lg hover:bg-saddle-brown/90 transition-colors disabled:opacity-50">
+                <button type="submit" disabled={isLoading} className="w-full sm:w-auto min-h-11 sm:min-h-0 px-5 py-2 text-sm font-medium text-desert-sand bg-saddle-brown rounded-lg hover:bg-saddle-brown/90 transition-colors disabled:opacity-50">
                     {isLoading ? 'Saving...' : 'Save Animal'}
                 </button>
             </div>

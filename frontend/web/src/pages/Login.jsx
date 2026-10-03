@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { selectCurrentUser, selectCurrentToken } from '../features/auth/authSlice';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../features/auth/useAuth';
 import { useLoginMutation } from '../features/auth/authApiSlice';
 import { setCredentials } from '../features/auth/authSlice';
 
@@ -10,13 +10,14 @@ export const Login = () => {
    
     
     // 1. Check for token to verify logged-in status
-    const token = useSelector(selectCurrentToken);
+    const {user} = useAuth();
   
     useEffect(() => {
-        if (token) {
+        if (user) {
             navigate('/admin/animals');
         }
-    }, [token, navigate]);
+    }, [user, navigate]);
+    
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
