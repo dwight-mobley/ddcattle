@@ -45,6 +45,11 @@ class Reminder(models.Model):
 
     due_date = models.DateField()
 
+    due_time = models.TimeField(
+    null=True,
+    blank=True,
+)
+
     # Recurrence
     recurring = models.BooleanField(
         default=False,

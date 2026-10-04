@@ -98,6 +98,7 @@ class ReminderSerializer(serializers.ModelSerializer):
             "animal",
             "animal_name",
             "due_date",
+            "due_time",
             "recurring",
             "recurrence_interval",
             "recurrence_unit",
