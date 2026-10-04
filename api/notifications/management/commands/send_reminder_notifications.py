@@ -179,7 +179,7 @@ class Command(BaseCommand):
                         subscription=subscription,
                         title=title,
                         body=body,
-                        url="/reminders/",
+                        url="/admin/",
                     )
 
                     notification_sent = True

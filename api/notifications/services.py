@@ -22,7 +22,7 @@ def send_push_notification(
     subscription,
     title,
     body,
-    url="/",
+    url="/admin/",
 ):
     vapid = get_vapid_key()
 
