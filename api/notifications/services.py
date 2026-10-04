@@ -45,4 +45,5 @@ def send_push_notification(
         vapid_claims={
             "sub": settings.VAPID_SUBJECT,
         },
+        ttl=60,
     )
