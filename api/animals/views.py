@@ -135,6 +135,9 @@ class BaseAnimalViewSet(viewsets.ModelViewSet):
             .order_by("-uploaded_at")
         )
 
+        from training.media import scope_training_media
+        media_items = scope_training_media(media_items, request.user)
+
         for media in media_items:
             events.append({
                 "id": f"media-{media.id}",
@@ -153,12 +156,30 @@ class BaseAnimalViewSet(viewsets.ModelViewSet):
         # ---------------------------------------------------------
         # Newest first
         # ---------------------------------------------------------
+        from training.timeline import activity_events
+        events.extend(activity_events(animal, request))
+
         events.sort(
             key=lambda event: event["date"],
             reverse=True,
         )
 
         return Response(events)
+
+    @action(detail=True, methods=["get"], url_path="training-rating")
+    def training_rating(self, request, slug=None):
+        from training.access import accessible_animals
+        from training.rating import training_rating, RUBRICS
+        from rest_framework.exceptions import PermissionDenied, ValidationError
+        animal = self.get_object()
+        if not accessible_animals(request.user).filter(pk=animal.pk).exists():
+            raise PermissionDenied()
+        if animal.species != Animal.Species.HORSE:
+            raise ValidationError("Training ratings apply to horses.")
+        rubric = request.query_params.get("rubric", "foundation-v1")
+        if rubric not in RUBRICS:
+            raise ValidationError({"rubric": "Unknown training rubric."})
+        return Response(training_rating(animal, rubric))
 
     @action(detail=True, methods=['post'], url_path='inquire', permission_classes=[AllowAny], throttle_classes=[AnonRateThrottle])
     def inquire(self, request, slug=None):

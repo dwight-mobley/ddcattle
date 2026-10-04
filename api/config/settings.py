@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "reminders",
     "anymail",
     "notifications",
+    "training.apps.TrainingConfig",
 ]
 
 MIDDLEWARE = [

@@ -33,6 +33,8 @@ class AnimalAccess(models.Model):
 
     can_manage_medical = models.BooleanField(default=False)
 
+    can_manage_training = models.BooleanField(default=False)
+
     can_manage_appointments = models.BooleanField(default=False)
 
     can_upload_media = models.BooleanField(default=False)

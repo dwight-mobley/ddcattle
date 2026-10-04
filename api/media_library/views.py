@@ -1,4 +1,5 @@
 from rest_framework import viewsets, filters
+from rest_framework.exceptions import ValidationError
 from .models import AnimalMedia
 from .serializers import MediaLibrarySerializer
 
@@ -33,7 +34,8 @@ class MediaLibraryViewSet(viewsets.ModelViewSet):
     ordering = ["-uploaded_at", "-id"]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        from training.media import scope_training_media
+        queryset = scope_training_media(super().get_queryset(), self.request.user)
 
         # These filters apply to browsing the library, not
         # retrieving, updating, or deleting an individual item.
@@ -74,3 +76,13 @@ class MediaLibraryViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(public=(value == "true"))
 
         return queryset
+
+    def perform_update(self, serializer):
+        from training.media import check_training_media_write
+        check_training_media_write(serializer.instance, self.request.user, serializer.validated_data.get("animal"))
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        from training.media import check_training_media_write
+        check_training_media_write(instance, self.request.user)
+        instance.delete()
