@@ -11,7 +11,7 @@ from media_library.models import AnimalMedia
 from media_library.serializers import MediaLibrarySerializer
 from .models import RidingLocation, Ride, TrainingSession, TrainingSkill, SessionSkillProgress
 from .serializers import RidingLocationSerializer, RideSerializer, TrainingSessionSerializer, TrainingSkillSerializer, SessionSkillProgressSerializer
-from .access import accessible_animals, require_manage, visible_rides
+from .access import accessible_animals, require_manage, visible_rides, accessible_locations
 
 
 class RecordViewSet(viewsets.ModelViewSet):
@@ -58,8 +58,10 @@ class RidingLocationViewSet(RecordViewSet):
     serializer_class = RidingLocationSerializer
 
     def get_queryset(self):
-        queryset = RidingLocation.objects.all()
-        return queryset if self.request.user.is_staff else queryset.filter(created_by=self.request.user)
+        queryset = accessible_locations(self.request.user)
+        if self.request.method not in SAFE_METHODS and not self.request.user.is_staff:
+            queryset = queryset.filter(created_by=self.request.user)
+        return queryset
 
 
 class MediaAttachmentMixin:

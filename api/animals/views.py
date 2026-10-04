@@ -166,6 +166,25 @@ class BaseAnimalViewSet(viewsets.ModelViewSet):
 
         return Response(events)
 
+    @action(detail=True, methods=["get"], url_path="training-access")
+    def training_access(self, request, slug=None):
+        from training.access import accessible_animals, require_manage
+        from rest_framework.exceptions import PermissionDenied
+        animal = self.get_object()
+        if not accessible_animals(request.user).filter(pk=animal.pk).exists():
+            raise PermissionDenied()
+        horses = []
+        for horse in accessible_animals(request.user).filter(species=Animal.Species.HORSE).order_by("name"):
+            capabilities = {"id": horse.pk, "name": horse.name}
+            for key, media in [("can_manage_training", False), ("can_upload_media", True)]:
+                try:
+                    require_manage(request.user, [horse], media=media)
+                    capabilities[key] = True
+                except PermissionDenied:
+                    capabilities[key] = False
+            horses.append(capabilities)
+        return Response({"horses": horses})
+
     @action(detail=True, methods=["get"], url_path="training-rating")
     def training_rating(self, request, slug=None):
         from training.access import accessible_animals

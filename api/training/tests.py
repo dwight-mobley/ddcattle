@@ -162,3 +162,27 @@ class TrainingTests(TestCase):
         self.assertEqual(self.client.post("/api/training/rides/", data, format="json").status_code, 400)
         self.assertEqual(self.client.get("/api/training/rides/?date_from=nonsense").status_code, 400)
         self.assertEqual(self.client.post("/api/training/locations/", {"name": "Park", "latitude": "35"}, format="json").status_code, 400)
+
+
+    def test_frontend_capabilities_match_record_permissions(self):
+        AnimalAccess.objects.create(animal=self.horse, user=self.other, role="trainer", can_manage_training=True)
+        self.client.force_authenticate(self.other)
+        response = self.client.get(f"/api/animals/{self.horse.slug}/training-access/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["horses"], [{"id": self.horse.pk, "name": self.horse.name, "can_manage_training": True, "can_upload_media": False}])
+        self.client.force_authenticate(user=None)
+        self.assertEqual(self.client.get(f"/api/animals/{self.horse.slug}/training-access/").status_code, 403)
+
+    def test_shared_location_can_be_retained_by_authorized_manager(self):
+        from .models import RidingLocation
+        location = RidingLocation.objects.create(name="Don Carter", created_by=self.user)
+        ride_id = self.ride().data["id"]
+        Ride.objects.filter(pk=ride_id).update(location=location)
+        for horse in [self.horse, self.second]:
+            AnimalAccess.objects.create(animal=horse, user=self.other, role="manager")
+        self.client.force_authenticate(self.other)
+        response = self.client.get("/api/training/locations/")
+        self.assertIn(location.pk, [row["id"] for row in response.data])
+        response = self.client.patch(f"/api/training/rides/{ride_id}/", {"location": location.pk, "notes": "Retained shared location"}, format="json")
+        self.assertEqual(response.status_code, 200, response.data)
+        self.assertEqual(self.client.patch(f"/api/training/locations/{location.pk}/", {"name": "Changed"}, format="json").status_code, 404)

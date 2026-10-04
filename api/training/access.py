@@ -27,3 +27,14 @@ def visible_rides(user):
     # A shared record reveals every participant; require access to all of them.
     ids = accessible_animals(user).values("pk")
     return Ride.objects.exclude(participants__animal__in=Animal.objects.exclude(pk__in=ids)).filter(participants__isnull=False).distinct()
+
+
+def accessible_locations(user):
+    from .models import RidingLocation
+    if user.is_staff:
+        return RidingLocation.objects.all()
+    return RidingLocation.objects.filter(
+        Q(created_by=user)
+        | Q(ride_records__in=visible_rides(user))
+        | Q(trainingsession_records__animal__in=accessible_animals(user))
+    ).distinct()

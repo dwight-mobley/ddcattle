@@ -2,7 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 from animals.models.animal import Animal
 from .models import RidingLocation, Ride, RideParticipant, TrainingSession, TrainingSkill, SessionSkillProgress
-from .access import accessible_animals, require_manage, visible_rides
+from .access import accessible_animals, require_manage, visible_rides, accessible_locations
 
 
 class CheckedSerializer(serializers.ModelSerializer):
@@ -17,7 +17,7 @@ class CheckedSerializer(serializers.ModelSerializer):
         if self.instance and hasattr(self.instance, "animal"):
             require_manage(user, [self.instance.animal])
         location = attrs.get("location")
-        if location and location.created_by_id != user.pk and not user.is_staff:
+        if location and not accessible_locations(user).filter(pk=location.pk).exists():
             raise serializers.ValidationError({"location": "Choose a location you manage."})
         return attrs
 
