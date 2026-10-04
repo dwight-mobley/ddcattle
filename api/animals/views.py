@@ -18,6 +18,12 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives, get_connection
 from rest_framework.permissions import AllowAny
 from rest_framework.throttling import AnonRateThrottle
+from datetime import datetime, time
+
+from django.utils import timezone
+from medical.models import MedicalRecord
+from reminders.models import ReminderCompletion
+
 class BaseAnimalViewSet(viewsets.ModelViewSet):
     """
     Base ViewSet that handles universal access control
@@ -43,6 +49,116 @@ class BaseAnimalViewSet(viewsets.ModelViewSet):
             qs = qs.select_related('profile_image')      
             
         return qs.order_by('-featured', 'name')   
+
+    @action(
+    detail=True,
+    methods=["get"],
+    url_path="timeline",
+    )
+    def timeline(self, request, slug=None):
+        animal = self.get_object()
+
+        events = []
+
+        # ---------------------------------------------------------
+        # Medical records
+        # ---------------------------------------------------------
+        medical_records = (
+            MedicalRecord.objects
+            .filter(animal=animal)
+            .order_by("-date", "-created_at")
+        )
+
+        for record in medical_records:
+            event_datetime = timezone.make_aware(
+                datetime.combine(
+                    record.date,
+                    time.min,
+                )
+            )
+
+            events.append({
+                "id": f"medical-{record.id}",
+                "source_id": record.id,
+                "type": "medical",
+                "date": event_datetime,
+                "title": record.title,
+                "description": record.description,
+                "data": {
+                    "record_type": record.record_type,
+                    "record_type_display": record.get_record_type_display(),
+                    "weight": record.weight,
+                    "height": record.height,
+                    "veterinarian": record.veterinarian,
+                    "clinic": record.clinic,
+                    "medication": record.medication,
+                    "dosage": record.dosage,
+                    "follow_up_date": record.follow_up_date,
+                },
+            })
+
+        # ---------------------------------------------------------
+        # Completed reminders
+        # ---------------------------------------------------------
+        completions = (
+            ReminderCompletion.objects
+            .filter(reminder__animal=animal)
+            .select_related("reminder")
+            .order_by("-completed_at")
+        )
+
+        for completion in completions:
+            reminder = completion.reminder
+
+            events.append({
+                "id": f"reminder-{completion.id}",
+                "source_id": completion.id,
+                "type": "reminder",
+                "date": completion.completed_at,
+                "title": reminder.title,
+                "description": reminder.description,
+                "data": {
+                    "reminder_type": reminder.reminder_type,
+                    "reminder_type_display":
+                        reminder.get_reminder_type_display(),
+                    "notes": completion.notes,
+                    "recurring": reminder.recurring,
+                },
+            })
+
+        # ---------------------------------------------------------
+        # Media
+        # ---------------------------------------------------------
+        media_items = (
+            AnimalMedia.objects
+            .filter(animal=animal)
+            .order_by("-uploaded_at")
+        )
+
+        for media in media_items:
+            events.append({
+                "id": f"media-{media.id}",
+                "source_id": media.id,
+                "type": "media",
+                "date": media.uploaded_at,
+                "title": media.caption or media.get_media_type_display(),
+                "description": media.description,
+                "data": {
+                    "media_type": media.media_type,
+                    "url": media.get_url(),
+                    "public": media.public,
+                },
+            })
+
+        # ---------------------------------------------------------
+        # Newest first
+        # ---------------------------------------------------------
+        events.sort(
+            key=lambda event: event["date"],
+            reverse=True,
+        )
+
+        return Response(events)
 
     @action(detail=True, methods=['post'], url_path='inquire', permission_classes=[AllowAny], throttle_classes=[AnonRateThrottle])
     def inquire(self, request, slug=None):
