@@ -189,19 +189,41 @@ class Command(BaseCommand):
                     failed += 1
 
                     self.stderr.write(
-                        f"Push failed for subscription "
-                        f"{subscription.pk}: {exc}"
+                        self.style.ERROR(
+                            f"Push failed for subscription {subscription.pk}"
+                        )
                     )
 
-                    if (
-                        exc.response is not None
-                        and exc.response.status_code
-                        in (404, 410)
-                    ):
-                        subscription.active = False
-                        subscription.save(
-                            update_fields=["active"]
+                    self.stderr.write(
+                        f"Device: {subscription.device_name}"
+                    )
+
+                    self.stderr.write(
+                        f"Endpoint: {subscription.endpoint[:100]}"
+                    )
+
+                    self.stderr.write(
+                        f"Exception: {exc}"
+                    )
+
+                    if exc.response is not None:
+                        self.stderr.write(
+                            f"Status code: {exc.response.status_code}"
                         )
+
+                        self.stderr.write(
+                            f"Response body: {exc.response.text!r}"
+                        )
+
+                        self.stderr.write(
+                            f"Response headers: {dict(exc.response.headers)}"
+                        )
+
+                        if exc.response.status_code in (404, 410):
+                            subscription.active = False
+                            subscription.save(
+                                update_fields=["active"]
+                            )
 
                 except Exception as exc:
                     failed += 1
