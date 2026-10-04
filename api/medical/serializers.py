@@ -23,6 +23,8 @@ class MedicalRecordSerializer(serializers.ModelSerializer):
             "record_type",
             "title",
             "date",
+            "weight",
+            "height",
             "description",
             "veterinarian",
             "clinic",

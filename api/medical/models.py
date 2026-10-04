@@ -36,6 +36,22 @@ class MedicalRecord(models.Model):
 
     description = models.TextField(blank=True)
 
+    weight = models.DecimalField(
+        max_digits=7,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Weight in pounds at the time of this record.",
+    )
+
+    height = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Height at the time of this record.",
+    )
+
     veterinarian = models.CharField(
         max_length=200,
         blank=True,
