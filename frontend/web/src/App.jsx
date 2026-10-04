@@ -1,4 +1,5 @@
 import RanchHome from './pages/Home';
+import AdminSettings from './pages/admin/Settings';
 import MedicalRecordCreate from './pages/admin/MedicalRecordCreate';
 import MedicalRecordEdit from './pages/admin/MedicalRecordEdit';
 import AnimalsAdmin from './pages/admin/AnimalsAdmin';
@@ -21,6 +22,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Loading from './components/Loader';
 import RequireAdmin from './components/auth/RequireAuth';
 import MedicalRecordsAdmin from './pages/admin/MedicalRecordsAdmin';
+import Dashboard from './pages/admin/Dashboard';
 
 const router = createBrowserRouter([
     {
@@ -37,6 +39,8 @@ const router = createBrowserRouter([
     {
         path: '/admin', element:<RequireAdmin><DashboardLayout /></RequireAdmin>,
         children: [
+            { path: '', index: true, element: <Dashboard /> },
+            { path: 'dashboard', element: <Dashboard /> },
             { path: 'animals', element: <AnimalsAdmin /> },
             { path: 'animals/new', element: <AnimalCreate /> },
             { path: 'animals/:slug/edit', element: <AnimalEdit /> },
@@ -48,6 +52,7 @@ const router = createBrowserRouter([
             {path: 'medical', element: <MedicalRecordsAdmin/>},
             {path: 'medical/new', element: <MedicalRecordCreate /> },
             {path: 'medical/:id/edit', element: <MedicalRecordEdit /> },
+            { path: 'settings', element: <AdminSettings /> },
         ],
     },
 ]);
