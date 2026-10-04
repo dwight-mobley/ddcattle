@@ -14,6 +14,12 @@ export const animalApi = baseApi.injectEndpoints({
       query: (slug) => `animals/${slug}/`,
       providesTags: (result, error, slug) => [{ type: 'Animal', id: slug }],
     }),
+    getAnimalTimeline: builder.query({
+      query: (slug) => `animals/${slug}/timeline/`,
+      providesTags: (result, error, slug) => [
+        { type: 'Animal', id: slug },
+      ],
+    }),
     // --- NEW BREED ENDPOINTS ---
     getHorseBreeds: builder.query({
       query: () => "horse-breeds/", // Adjust to match your Django URL route
@@ -42,7 +48,7 @@ export const animalApi = baseApi.injectEndpoints({
     updateAnimal: builder.mutation({
       query: ({ slug, ...updates }) => ({
         url: `animals/${slug}/`,
-        method: 'PUT', 
+        method: 'PUT',
         body: updates,
       }),
       invalidatesTags: (result, error, { id }) => ['Animal', { type: 'Animal', id: id }],
@@ -57,14 +63,15 @@ export const animalApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { 
-    useGetAnimalsQuery, 
-    useGetAnimalBySlugQuery,
-    useGetFeaturedAnimalsQuery, 
-    useGetHorseBreedsQuery, 
-    useGetDogBreedsQuery, 
-    useSendAnimalInquiryMutation,
-    useAddAnimalMutation,
-    useUpdateAnimalMutation,
-    useDeleteAnimalMutation 
+export const {
+  useGetAnimalsQuery,
+  useGetAnimalBySlugQuery,
+  useGetAnimalTimelineQuery,
+  useGetFeaturedAnimalsQuery,
+  useGetHorseBreedsQuery,
+  useGetDogBreedsQuery,
+  useSendAnimalInquiryMutation,
+  useAddAnimalMutation,
+  useUpdateAnimalMutation,
+  useDeleteAnimalMutation
 } = animalApi;

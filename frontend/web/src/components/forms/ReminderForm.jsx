@@ -67,6 +67,9 @@ export default function ReminderForm({
         due_date:
             initialData.due_date?.slice(0, 10) || '',
 
+        due_time:
+            initialData.due_time?.slice(0, 5) || '',
+
         active:
             initialData.active ?? true,
 
@@ -351,13 +354,22 @@ export default function ReminderForm({
                     </select>
                 </Field>
 
-                <Field label="Due date *">
-                    {input(
-                        'due_date',
-                        'date',
-                        { required: true }
-                    )}
-                </Field>
+                <div className="grid gap-4 sm:grid-cols-2">
+                    <Field label="Due date *">
+                        {input(
+                            'due_date',
+                            'date',
+                            { required: true }
+                        )}
+                    </Field>
+
+                    <Field label="Time (optional)">
+                        {input(
+                            'due_time',
+                            'time'
+                        )}
+                    </Field>
+                </div>
 
 
                 {isCreate ? (
@@ -798,12 +810,11 @@ export default function ReminderForm({
                         {isLoading
                             ? 'Saving…'
                             : isCreate &&
-                              appliesTo === 'animals' &&
-                              selectedCount > 0
-                                ? `Create ${selectedCount} ${
-                                    selectedCount === 1
-                                        ? 'Reminder'
-                                        : 'Reminders'
+                                appliesTo === 'animals' &&
+                                selectedCount > 0
+                                ? `Create ${selectedCount} ${selectedCount === 1
+                                    ? 'Reminder'
+                                    : 'Reminders'
                                 }`
                                 : 'Save Reminder'}
                     </button>

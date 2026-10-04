@@ -21,12 +21,19 @@ db.sqlite3
 db.sqlite3-journal
 *.log
 
+*.worker*
+*.sh
+
+#Vapid
+private_key.pem
+public_key.pem
+
 # Django local settings and secrets
 .env
 .env.*
 !.env.example
 staticfiles/
-media/
+app/**/media/
 
 # Node / React / Vite
 node_modules/

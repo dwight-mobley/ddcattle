@@ -1,4 +1,8 @@
+
 import RanchHome from './pages/Home';
+import AnimalTimelinePage from './pages/animals/AnimalTimelinePage';
+import AnimalGalleryPage from './pages/animals/AnimalGalleryPage';
+import AnimalOverview from './pages/animals/AnimalOverview';
 import AdminSettings from './pages/admin/Settings';
 import MedicalRecordCreate from './pages/admin/MedicalRecordCreate';
 import MedicalRecordEdit from './pages/admin/MedicalRecordEdit';
@@ -13,7 +17,7 @@ import BulkMediaUpload from './components/BulkMediaUpload';
 import MainLayout from './components/layout/MainLayout';
 import DashboardLayout from './components/layout/DashboardLayout';
 import TheBarn from './pages/TheBarn';
-import AnimalDetails from './pages/AnimalDetails';
+import AnimalDetails from './pages/animals/AnimalDetails';
 import ErrorPage from './pages/Error';
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -33,11 +37,19 @@ const router = createBrowserRouter([
             { path: 'about', element: <About /> },
             { path: 'contact', element: <Contact /> },
             { path: 'barn', element: <TheBarn /> },
-            { path: 'animals/:slug', element: <AnimalDetails /> },
+            {
+                path: 'animals/:slug',
+                element: <AnimalDetails />,
+                children: [
+                    { index: true, element: <AnimalOverview /> },
+                    { path: 'timeline', element: <AnimalTimelinePage /> },
+                    { path: 'gallery', element: <AnimalGalleryPage /> },
+                ],
+            },
         ],
     },
     {
-        path: '/admin', element:<RequireAdmin><DashboardLayout /></RequireAdmin>,
+        path: '/admin', element: <RequireAdmin><DashboardLayout /></RequireAdmin>,
         children: [
             { path: '', index: true, element: <Dashboard /> },
             { path: 'dashboard', element: <Dashboard /> },
@@ -49,9 +61,9 @@ const router = createBrowserRouter([
             { path: 'reminders/:id/edit', element: <ReminderEdit /> },
             { path: 'media', element: <MediaAdmin /> },
             { path: 'media/upload', element: <BulkMediaUpload /> },
-            {path: 'medical', element: <MedicalRecordsAdmin/>},
-            {path: 'medical/new', element: <MedicalRecordCreate /> },
-            {path: 'medical/:id/edit', element: <MedicalRecordEdit /> },
+            { path: 'medical', element: <MedicalRecordsAdmin /> },
+            { path: 'medical/new', element: <MedicalRecordCreate /> },
+            { path: 'medical/:id/edit', element: <MedicalRecordEdit /> },
             { path: 'settings', element: <AdminSettings /> },
         ],
     },

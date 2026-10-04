@@ -1,4 +1,4 @@
-import React, {  useState } from 'react';
+import React, { useState } from 'react';
 
 import { useGetAnimalsQuery } from '../../features/api/animalApi';
 
@@ -125,6 +125,8 @@ export default function MedicalRecordForm({
             initialData.record_type || 'general',
         title: initialData.title || '',
         date: initialData.date || today(),
+        weight: initialData.weight ?? '',
+        height: initialData.height ?? '',
         description: initialData.description || '',
         veterinarian: initialData.veterinarian || '',
         clinic: initialData.clinic || '',
@@ -136,7 +138,7 @@ export default function MedicalRecordForm({
             initialData.private_notes || '',
     });
 
-   
+
 
     function change(event) {
         const { name, value } = event.target;
@@ -155,6 +157,8 @@ export default function MedicalRecordForm({
             record_type: form.record_type,
             title: form.title.trim(),
             date: form.date,
+            weight: form.weight === '' ? null : form.weight,
+            height: form.height === '' ? null : form.height,
             description: form.description.trim(),
             veterinarian: form.veterinarian.trim(),
             clinic: form.clinic.trim(),
@@ -263,6 +267,35 @@ export default function MedicalRecordForm({
                             value={form.date}
                             onChange={change}
                             required
+                            className={inputClasses}
+                        />
+                    </Field>
+                </div>
+                <div className="mt-4 sm:mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Field label="Weight (lbs)">
+                        <input
+                            type="number"
+                            name="weight"
+                            value={form.weight}
+                            onChange={change}
+                            min="0"
+                            step="0.01"
+                            inputMode="decimal"
+                            placeholder="1100"
+                            className={inputClasses}
+                        />
+                    </Field>
+
+                    <Field label="Height">
+                        <input
+                            type="number"
+                            name="height"
+                            value={form.height}
+                            onChange={change}
+                            min="0"
+                            step="0.01"
+                            inputMode="decimal"
+                            placeholder="15.2"
                             className={inputClasses}
                         />
                     </Field>
