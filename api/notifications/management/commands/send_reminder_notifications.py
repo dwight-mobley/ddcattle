@@ -1,7 +1,7 @@
 from collections import Counter, defaultdict
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from pywebpush import WebPushException
 
@@ -14,15 +14,78 @@ from reminders.models import Reminder
 
 
 class Command(BaseCommand):
-    help = "Send grouped push notifications for active reminders."
+    help = (
+        "Send grouped push notifications for active reminders. "
+        "Notifications may repeat until the reminder is completed."
+    )
+
+    DEFAULT_TIME = "0900"
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--frequency",
+            type=str,
+            help=(
+                "Repeat notification frequency. "
+                "Examples: 30min, 1hr, 6hr, 12hr, 24hr."
+            ),
+        )
+
+        parser.add_argument(
+            "--time",
+            type=str,
+            help=(
+                "Daily notification time in HHMM format. "
+                "Example: 0900 for 9:00 AM."
+            ),
+        )
 
     def handle(self, *args, **options):
+        frequency_value = options.get("frequency")
+        time_value = options.get("time")
+
+        if frequency_value and time_value:
+            raise CommandError(
+                "Use either --frequency or --time, not both."
+            )
+
+        # If neither option is supplied, default to 9:00 AM.
+        if not frequency_value and not time_value:
+            time_value = self.DEFAULT_TIME
+
+        frequency = None
+        notification_time = None
+
+        if frequency_value:
+            frequency = self.parse_frequency(
+                frequency_value
+            )
+
+            self.stdout.write(
+                f"Notification mode: every "
+                f"{frequency_value}"
+            )
+
+        else:
+            notification_time = self.parse_time(
+                time_value
+            )
+
+            self.stdout.write(
+                f"Notification mode: daily at "
+                f"{notification_time.strftime('%H:%M')}"
+            )
+
+        now = timezone.localtime()
         today = timezone.localdate()
 
         reminders = (
             Reminder.objects
             .filter(active=True)
-            .select_related("animal", "created_by")
+            .select_related(
+                "animal",
+                "created_by",
+            )
         )
 
         groups = defaultdict(list)
@@ -34,7 +97,8 @@ class Command(BaseCommand):
 
         #
         # Step 1:
-        # Find reminders that need notifications and group them.
+        # Find reminders that currently need a
+        # notification.
         #
         for reminder in reminders:
             notification = self.get_notification(
@@ -45,18 +109,25 @@ class Command(BaseCommand):
             if notification is None:
                 continue
 
-            notification_type, log_date = notification
+            notification_type, log_date = (
+                notification
+            )
 
             user = reminder.created_by
 
-            already_sent = NotificationLog.objects.filter(
-                user=user,
-                reminder=reminder,
-                notification_type=notification_type,
-                scheduled_date=log_date,
-            ).exists()
+            should_send = (
+                self.should_send_notification(
+                    reminder=reminder,
+                    user=user,
+                    notification_type=notification_type,
+                    now=now,
+                    today=today,
+                    frequency=frequency,
+                    notification_time=notification_time,
+                )
+            )
 
-            if already_sent:
+            if not should_send:
                 skipped += 1
                 continue
 
@@ -78,13 +149,17 @@ class Command(BaseCommand):
             log_date,
         ), grouped_reminders in groups.items():
 
-            subscriptions = PushSubscription.objects.filter(
-                user_id=user_id,
-                active=True,
+            subscriptions = (
+                PushSubscription.objects.filter(
+                    user_id=user_id,
+                    active=True,
+                )
             )
 
             if not subscriptions.exists():
-                skipped += len(grouped_reminders)
+                skipped += len(
+                    grouped_reminders
+                )
                 continue
 
             title = self.build_title(
@@ -138,8 +213,9 @@ class Command(BaseCommand):
                     )
 
             #
-            # Only log the reminders if at least one
-            # device successfully received the push.
+            # Only create NotificationLog entries
+            # when at least one device successfully
+            # received the push.
             #
             if notification_sent:
                 NotificationLog.objects.bulk_create([
@@ -166,24 +242,191 @@ class Command(BaseCommand):
             )
         )
 
-    def get_notification(self, reminder, today):
-        if reminder.due_date == today + timedelta(days=1):
+    def should_send_notification(
+        self,
+        reminder,
+        user,
+        notification_type,
+        now,
+        today,
+        frequency,
+        notification_time,
+    ):
+        """
+        Determine whether this reminder should send
+        another notification.
+
+        Frequency mode:
+            Send if enough time has passed since the
+            last successful notification.
+
+        Daily time mode:
+            Send once per day after the configured
+            notification time.
+        """
+
+        logs = NotificationLog.objects.filter(
+            user=user,
+            reminder=reminder,
+            notification_type=notification_type,
+        )
+
+        #
+        # Frequency mode
+        #
+        if frequency is not None:
+            last_log = (
+                logs
+                .order_by("-sent_at")
+                .first()
+            )
+
+            if last_log is None:
+                return True
+
+            next_allowed = (
+                last_log.sent_at + frequency
+            )
+
+            return now >= next_allowed
+
+        #
+        # Daily time mode
+        #
+        current_time = now.time().replace(
+            tzinfo=None
+        )
+
+        if current_time < notification_time:
+            return False
+
+        #
+        # Has this particular notification type
+        # already been sent today?
+        #
+        sent_today = logs.filter(
+            sent_at__date=today,
+        ).exists()
+
+        return not sent_today
+
+    def parse_frequency(self, value):
+        """
+        Convert values such as:
+
+            30min
+            1hr
+            6hr
+            12hr
+            24hr
+
+        into timedelta objects.
+        """
+
+        value = value.strip().lower()
+
+        if value.endswith("min"):
+            number = value[:-3]
+
+            try:
+                minutes = int(number)
+            except ValueError:
+                raise CommandError(
+                    f"Invalid frequency: {value}"
+                )
+
+            if minutes <= 0:
+                raise CommandError(
+                    "Frequency must be greater than zero."
+                )
+
+            return timedelta(
+                minutes=minutes
+            )
+
+        if value.endswith("hr"):
+            number = value[:-2]
+
+            try:
+                hours = int(number)
+            except ValueError:
+                raise CommandError(
+                    f"Invalid frequency: {value}"
+                )
+
+            if hours <= 0:
+                raise CommandError(
+                    "Frequency must be greater than zero."
+                )
+
+            return timedelta(
+                hours=hours
+            )
+
+        raise CommandError(
+            "Invalid frequency. "
+            "Use values such as "
+            "30min, 1hr, 6hr, 12hr, or 24hr."
+        )
+
+    def parse_time(self, value):
+        """
+        Convert HHMM into a Python time object.
+
+        Examples:
+
+            0900 -> 09:00
+            1430 -> 14:30
+            2100 -> 21:00
+        """
+
+        value = value.strip()
+
+        try:
+            parsed = datetime.strptime(
+                value,
+                "%H%M",
+            )
+        except ValueError:
+            raise CommandError(
+                "Invalid time. "
+                "Use 24-hour HHMM format. "
+                "Examples: 0900, 1430, 2100."
+            )
+
+        return time(
+            hour=parsed.hour,
+            minute=parsed.minute,
+        )
+
+    def get_notification(
+        self,
+        reminder,
+        today,
+    ):
+        if (
+            reminder.due_date
+            == today + timedelta(days=1)
+        ):
             return (
-                NotificationLog.NotificationType
+                NotificationLog
+                .NotificationType
                 .REMINDER_UPCOMING,
                 reminder.due_date,
             )
 
         if reminder.due_date == today:
             return (
-                NotificationLog.NotificationType
+                NotificationLog
+                .NotificationType
                 .REMINDER_DUE,
                 reminder.due_date,
             )
 
         if reminder.due_date < today:
             return (
-                NotificationLog.NotificationType
+                NotificationLog
+                .NotificationType
                 .REMINDER_OVERDUE,
                 today,
             )
@@ -203,7 +446,8 @@ class Command(BaseCommand):
 
         if (
             notification_type
-            == NotificationLog.NotificationType
+            == NotificationLog
+            .NotificationType
             .REMINDER_UPCOMING
         ):
             return (
@@ -213,7 +457,8 @@ class Command(BaseCommand):
 
         if (
             notification_type
-            == NotificationLog.NotificationType
+            == NotificationLog
+            .NotificationType
             .REMINDER_DUE
         ):
             return (
@@ -226,10 +471,10 @@ class Command(BaseCommand):
             f"{reminder_word}"
         )
 
-    def build_summary_body(self, reminders):
-        #
-        # Count reminders by their title.
-        #
+    def build_summary_body(
+        self,
+        reminders,
+    ):
         counts = Counter(
             reminder.title
             for reminder in reminders

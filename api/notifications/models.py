@@ -57,19 +57,7 @@ class NotificationLog(models.Model):
     )
 
     class Meta:
-        ordering = ["-sent_at"]
-
-        constraints = [
-            models.UniqueConstraint(
-                fields=[
-                    "user",
-                    "reminder",
-                    "notification_type",
-                    "scheduled_date",
-                ],
-                name="unique_reminder_notification",
-            ),
-        ]
+        ordering = ["-sent_at"]       
 
     def __str__(self):
         return (
