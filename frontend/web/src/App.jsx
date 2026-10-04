@@ -1,5 +1,6 @@
 
 import RanchHome from './pages/Home';
+import AnimalActivitiesPage from './pages/animals/AnimalActivitiesPage';
 import AnimalTimelinePage from './pages/animals/AnimalTimelinePage';
 import AnimalGalleryPage from './pages/animals/AnimalGalleryPage';
 import AnimalOverview from './pages/animals/AnimalOverview';
@@ -44,6 +45,8 @@ const router = createBrowserRouter([
                     { index: true, element: <AnimalOverview /> },
                     { path: 'timeline', element: <AnimalTimelinePage /> },
                     { path: 'gallery', element: <AnimalGalleryPage /> },
+                    { path: 'training', element: <AnimalActivitiesPage kind="sessions" /> },
+                    { path: 'rides', element: <AnimalActivitiesPage kind="rides" /> },
                 ],
             },
         ],

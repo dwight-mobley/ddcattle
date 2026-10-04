@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-export default function AnimalNav({ slug }) {
+export default function AnimalNav({ slug, species }) {
   const basePath = `/animals/${slug}`;
 
   const linkClass = ({ isActive }) =>
@@ -60,17 +60,11 @@ export default function AnimalNav({ slug }) {
             )}
           </NavLink>
 
-          {/*
-            Future:
-
-            <NavLink to={`${basePath}/training`}>
-              Training
+          {species === 'horse' && ['training', 'rides'].map(tab => (
+            <NavLink key={tab} to={`${basePath}/${tab}`} className={linkClass}>
+              {tab === 'training' ? 'Training' : 'Rides'}
             </NavLink>
-
-            <NavLink to={`${basePath}/rides`}>
-              Riding Log
-            </NavLink>
-          */}
+          ))}
         </div>
       </div>
     </nav>

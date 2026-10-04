@@ -1,0 +1,25 @@
+.activity-form input:not([type="checkbox"]), .activity-form select, .activity-form textarea {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 4px;
+  border: 1px solid #4a302133;
+  border-radius: 8px;
+  background: white;
+  padding: 10px 12px;
+  font-weight: 400;
+}
+.activity-form input:focus-visible, .activity-form select:focus-visible, .activity-form textarea:focus-visible {
+  outline: 2px solid #7b8c6f;
+  outline-offset: 2px;
+}
+.activity-button {
+  min-height: 44px;
+  background: #934a35;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.activity-button:hover { background: #4a3021; }
+.activity-button:disabled { opacity: .5; cursor: wait; }

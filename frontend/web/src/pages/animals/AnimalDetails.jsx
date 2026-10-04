@@ -92,7 +92,7 @@ export default function AnimalDetails() {
       </header>
 
 
-      <AnimalNav slug={slug} />
+      <AnimalNav slug={slug} species={animal.species} />
       <Outlet context={{animal }} />
 
      

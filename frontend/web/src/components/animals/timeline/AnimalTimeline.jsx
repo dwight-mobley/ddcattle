@@ -5,6 +5,7 @@ import { useGetAnimalTimelineQuery } from '../../../features/api/animalApi';
 import TimelineMedicalEvent from './TimelineMedicalEvent';
 import TimelineReminderEvent from './TimelineReminderEvent';
 import TimelineMediaGroup from './TimelineMediaGroup';
+import TimelineActivityEvent from './TimelineActivityEvent';
 
 function getMonthKey(date) {
   const value = new Date(date);
@@ -35,6 +36,8 @@ function formatEventDate(event) {
 }
 
 const filters = [
+  { id: 'training', label: 'Training' },
+  { id: 'ride', label: 'Rides' },
   {
     id: 'all',
     label: 'All',
@@ -180,7 +183,7 @@ export default function AnimalTimeline({
         </h1>
 
         <p className="mt-2 text-charcoal/55 max-w-2xl">
-          Medical history, completed reminders, and media
+          Medical history, completed reminders, rides, training, and media
           throughout {animalName}'s life.
         </p>
       </header>
@@ -238,6 +241,8 @@ export default function AnimalTimeline({
                 <p className="mb-2 text-[11px] uppercase tracking-[0.16em] text-sage font-bold">
                   {formatEventDate(event)}
                 </p>
+
+                {(event.type === 'ride' || event.type === 'training') && <TimelineActivityEvent event={event} slug={slug} />}
 
                 {event.type === 'medical' && (
                   <TimelineMedicalEvent event={event} />
