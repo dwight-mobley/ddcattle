@@ -205,11 +205,26 @@ class TrainingSessionSerializer(CheckedSerializer):
 
 
 class TrainingSkillSerializer(serializers.ModelSerializer):
+    code = serializers.SlugField(max_length=100, required=False)
+
+    def create(self, validated_data):
+        if not validated_data.get("code"):
+            from uuid import uuid4
+            from django.utils.text import slugify
+            name = slugify(validated_data["name"])[:80] or "skill"
+            validated_data["code"] = f"{name}-{uuid4().hex[:12]}"
+        return super().create(validated_data)
+
     class Meta:
         model = TrainingSkill
         fields = ["id", "code", "name", "category", "assessment_criteria", "active"]
 
     def validate_code(self, value):
+        other = TrainingSkill.objects.filter(code=value)
+        if self.instance:
+            other = other.exclude(pk=self.instance.pk)
+        if other.exists():
+            raise serializers.ValidationError("This skill code is already in use.")
         if self.instance and value != self.instance.code:
             raise serializers.ValidationError("Skill codes are stable identifiers; create a new skill instead.")
         return value
