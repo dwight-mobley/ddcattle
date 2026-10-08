@@ -17,6 +17,9 @@ from .access import accessible_animals, require_manage, visible_rides, accessibl
 class RecordViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
+    def get_permissions(self):
+        return [IsAuthenticated()] if self.request.method in SAFE_METHODS else [IsAdminUser()]
+
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 

@@ -14,7 +14,7 @@ from .rating import training_rating
 
 class TrainingTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="trainer")
+        self.user = get_user_model().objects.create_user(username="trainer", is_staff=True)
         self.other = get_user_model().objects.create_user(username="other")
         self.horse = Animal.objects.create(name="Titus", species="horse", created_by=self.user)
         self.second = Animal.objects.create(name="Henry", species="horse", created_by=self.user)
@@ -40,9 +40,11 @@ class TrainingTests(TestCase):
 
     def test_cross_animal_denial_and_read_scope(self):
         foreign = Animal.objects.create(name="Private", species="horse", created_by=self.other)
+        self.client.force_authenticate(self.other)
         response = self.client.post("/api/training/rides/", {"title": "Denied", "date": "2024-01-01", "participants": [{"animal": self.horse.pk}, {"animal": foreign.pk}]}, format="json")
         self.assertEqual(response.status_code, 403)
         self.assertFalse(Ride.objects.exists())
+        self.client.force_authenticate(self.user)
         ride = self.ride().data["id"]
         self.client.force_authenticate(self.other)
         self.assertEqual(self.client.get(f"/api/training/rides/{ride}/").status_code, 404)
@@ -169,7 +171,7 @@ class TrainingTests(TestCase):
         self.client.force_authenticate(self.other)
         response = self.client.get(f"/api/animals/{self.horse.slug}/training-access/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["horses"], [{"id": self.horse.pk, "name": self.horse.name, "can_manage_training": True, "can_upload_media": False}])
+        self.assertEqual(response.data["horses"], [{"id": self.horse.pk, "name": self.horse.name, "can_manage_training": False, "can_upload_media": False}])
         self.client.force_authenticate(user=None)
         self.assertEqual(self.client.get(f"/api/animals/{self.horse.slug}/training-access/").status_code, 403)
 
@@ -184,5 +186,5 @@ class TrainingTests(TestCase):
         response = self.client.get("/api/training/locations/")
         self.assertIn(location.pk, [row["id"] for row in response.data])
         response = self.client.patch(f"/api/training/rides/{ride_id}/", {"location": location.pk, "notes": "Retained shared location"}, format="json")
-        self.assertEqual(response.status_code, 200, response.data)
-        self.assertEqual(self.client.patch(f"/api/training/locations/{location.pk}/", {"name": "Changed"}, format="json").status_code, 404)
+        self.assertEqual(response.status_code, 403, response.data)
+        self.assertEqual(self.client.patch(f"/api/training/locations/{location.pk}/", {"name": "Changed"}, format="json").status_code, 403)

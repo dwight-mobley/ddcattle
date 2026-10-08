@@ -179,11 +179,23 @@ class BaseAnimalViewSet(viewsets.ModelViewSet):
             for key, media in [("can_manage_training", False), ("can_upload_media", True)]:
                 try:
                     require_manage(request.user, [horse], media=media)
-                    capabilities[key] = True
+                    capabilities[key] = request.user.is_staff
                 except PermissionDenied:
                     capabilities[key] = False
             horses.append(capabilities)
         return Response({"horses": horses})
+
+    @action(detail=True, methods=["get"], url_path="training-checklist")
+    def training_checklist(self, request, slug=None):
+        from training.access import accessible_animals
+        from training.checklist import training_checklist
+        from rest_framework.exceptions import PermissionDenied, ValidationError
+        animal = self.get_object()
+        if not accessible_animals(request.user).filter(pk=animal.pk).exists():
+            raise PermissionDenied()
+        if animal.species != Animal.Species.HORSE:
+            raise ValidationError("Training accomplishments apply to horses.")
+        return Response(training_checklist(animal))
 
     @action(detail=True, methods=["get"], url_path="training-rating")
     def training_rating(self, request, slug=None):

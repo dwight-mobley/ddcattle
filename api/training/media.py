@@ -1,7 +1,7 @@
 """Guard training attachments when accessed via the pre-existing gallery API."""
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from .models import Ride, TrainingSession
 from .access import accessible_animals, require_manage
 
@@ -17,6 +17,8 @@ def scope_training_media(queryset, user):
 def check_training_media_write(instance, user, animal=None):
     if instance.content_type_id not in training_content_types():
         return
+    if not user.is_authenticated or not user.is_staff:
+        raise PermissionDenied("Training and riding media can only be edited in Admin.")
     require_manage(user, [instance.animal], media=True)
     animal = animal or instance.animal
     target = instance.content_object

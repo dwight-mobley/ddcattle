@@ -8,6 +8,7 @@ export const trainingApi = baseApi.injectEndpoints({
     getTrainingLocations: builder.query({ query: () => 'training/locations/', providesTags: ['Training'] }),
     getTrainingSkills: builder.query({ query: () => 'training/skills/', providesTags: ['Training'] }),
     getTrainingProgress: builder.query({ query: params => ({ url: 'training/progress/', params }), providesTags: ['Training'] }),
+    getTrainingChecklist: builder.query({ query: slug => `animals/${slug}/training-checklist/`, providesTags: ['Training'] }),
     getTrainingRating: builder.query({ query: slug => `animals/${slug}/training-rating/`, providesTags: ['Training'] }),
     saveTrainingRecord: builder.mutation({ query: ({ kind, id, body }) => ({ url: `training/${kind}/${id ? `${id}/` : ''}`, method: id ? 'PATCH' : 'POST', body }), invalidatesTags: refresh }),
     deleteTrainingRecord: builder.mutation({ query: ({ kind, id }) => ({ url: `training/${kind}/${id}/`, method: 'DELETE' }), invalidatesTags: refresh }),
@@ -15,4 +16,4 @@ export const trainingApi = baseApi.injectEndpoints({
     uploadActivityMedia: builder.mutation({ query: ({ kind, id, body }) => ({ url: `training/${kind}/${id}/media/`, method: 'POST', body }), invalidatesTags: refresh }),
   }),
 });
-export const { useGetTrainingAccessQuery, useGetTrainingRecordsQuery, useGetTrainingLocationsQuery, useGetTrainingSkillsQuery, useGetTrainingProgressQuery, useGetTrainingRatingQuery, useSaveTrainingRecordMutation, useDeleteTrainingRecordMutation, useGetActivityMediaQuery, useUploadActivityMediaMutation } = trainingApi;
+export const { useGetTrainingAccessQuery, useGetTrainingRecordsQuery, useGetTrainingLocationsQuery, useGetTrainingSkillsQuery, useGetTrainingProgressQuery, useGetTrainingRatingQuery, useGetTrainingChecklistQuery, useSaveTrainingRecordMutation, useDeleteTrainingRecordMutation, useGetActivityMediaQuery, useUploadActivityMediaMutation } = trainingApi;

@@ -4,7 +4,7 @@ import { useDeleteMediaMutation } from '../../features/api/mediaApiSlice';
 import { Field, ErrorNotice } from './TrainingUI';
 import { rows } from './trainingUtils';
 
-export default function ActivityMedia({ kind, record, horses }) {
+export default function ActivityMedia({ kind, record, horses, canEdit = false }) {
   const { data, isLoading, error } = useGetActivityMediaQuery({ kind, id: record.id });
   const [upload, { isLoading: uploading, error: uploadError }] = useUploadActivityMediaMutation();
   const [remove, { isLoading: removing, error: deleteError }] = useDeleteMediaMutation();
@@ -14,7 +14,7 @@ export default function ActivityMedia({ kind, record, horses }) {
   const [isPublic, setPublic] = useState(false);
   const [confirm, setConfirm] = useState(null);
   const [inputKey, setInputKey] = useState(0);
-  const eligible = horses.filter(h => h.can_upload_media && (kind === 'rides' ? record.participants.some(p => p.animal === h.id) : record.animal === h.id));
+  const eligible = canEdit ? horses.filter(h => h.can_upload_media && (kind === 'rides' ? record.participants.some(p => p.animal === h.id) : record.animal === h.id)) : [];
   const selectedAnimal = animal || String(eligible[0]?.id || '');
   async function submit(e) {
     e.preventDefault(); if (!file) return;

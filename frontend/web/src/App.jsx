@@ -1,5 +1,6 @@
 
 import RanchHome from './pages/Home';
+import ActivitiesAdmin from './pages/admin/ActivitiesAdmin';
 import AnimalActivitiesPage from './pages/animals/AnimalActivitiesPage';
 import AnimalTimelinePage from './pages/animals/AnimalTimelinePage';
 import AnimalGalleryPage from './pages/animals/AnimalGalleryPage';
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
             { path: 'medical/new', element: <MedicalRecordCreate /> },
             { path: 'medical/:id/edit', element: <MedicalRecordEdit /> },
             { path: 'settings', element: <AdminSettings /> },
+            { path: 'rides', element: <ActivitiesAdmin kind="rides" /> },
+            { path: 'rides/:slug', element: <ActivitiesAdmin kind="rides" /> },
+            { path: 'training', element: <ActivitiesAdmin kind="sessions" /> },
+            { path: 'training/:slug', element: <ActivitiesAdmin kind="sessions" /> },
         ],
     },
 ]);

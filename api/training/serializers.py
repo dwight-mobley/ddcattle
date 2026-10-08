@@ -126,9 +126,10 @@ class TrainingSkillSerializer(serializers.ModelSerializer):
 
 
 class SessionSkillProgressSerializer(serializers.ModelSerializer):
+    context = serializers.CharField(required=False, allow_blank=True, default="")
     class Meta:
         model = SessionSkillProgress
-        fields = ["id", "session", "skill", "proficiency", "context", "accomplishment", "evidence", "created_by", "created_at", "updated_at"]
+        fields = ["id", "session", "skill", "proficiency", "accomplished", "context", "accomplishment", "evidence", "created_by", "created_at", "updated_at"]
         read_only_fields = ["created_by", "created_at", "updated_at"]
 
     def validate(self, attrs):
@@ -140,6 +141,6 @@ class SessionSkillProgressSerializer(serializers.ModelSerializer):
             require_manage(self.context["request"].user, [self.instance.session.animal])
             if session.pk != self.instance.session_id:
                 raise serializers.ValidationError({"session": "Assessment history cannot be reassigned to another session."})
-        if attrs.get("proficiency", getattr(self.instance, "proficiency", "")) and not attrs.get("evidence", getattr(self.instance, "evidence", "")).strip():
+        if (attrs.get("proficiency", getattr(self.instance, "proficiency", "")) or attrs.get("accomplished", getattr(self.instance, "accomplished", False))) and not attrs.get("evidence", getattr(self.instance, "evidence", "")).strip():
             raise serializers.ValidationError({"evidence": "Describe the evidence supporting this assessment."})
         return attrs

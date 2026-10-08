@@ -152,6 +152,7 @@ class SessionSkillProgress(Record):
     session = models.ForeignKey(TrainingSession, on_delete=models.CASCADE, related_name="skill_progress")
     skill = models.ForeignKey(TrainingSkill, on_delete=models.PROTECT, related_name="observations")
     proficiency = models.CharField(max_length=20, choices=Proficiency.choices, blank=True, help_text="Blank means practiced without an assessment.")
+    accomplished = models.BooleanField(default=False)
     context = models.CharField(max_length=100, blank=True, help_text="For example left side, right side, or mounted.")
     accomplishment = models.CharField(max_length=250, blank=True)
     evidence = models.TextField(blank=True)
@@ -162,5 +163,5 @@ class SessionSkillProgress(Record):
 
     def clean(self):
         super().clean()
-        if self.proficiency and not self.evidence.strip():
+        if (self.proficiency or self.accomplished) and not self.evidence.strip():
             raise ValidationError({"evidence": "Describe the evidence supporting this assessment."})
