@@ -18,10 +18,10 @@ export default function TrainingChecklist({ slug }) {
         {skill.milestones.length > 0 && <div className="border-t border-sage/20 pt-3"><p className="font-semibold">Recorded milestones</p><ul className="mt-2 space-y-2">{skill.milestones.map(item => <li key={item.observation_id}>{item.accomplishment}{item.context && ` (${item.context})`}<span className="block text-xs text-charcoal/60">{displayDate(item.date)}</span></li>)}</ul></div>}
       </div></details>}
     </li>)}</ul></div>)}
-    <p className="text-xs text-charcoal/60">The latest dated observation determines each checkbox. Left/right or other context-specific accomplishments stay separate. Update accomplishments through a training session in Admin.</p>
+    <p className="text-xs text-charcoal/60">The latest dated session assessment or accomplished ride skill determines each checkbox. Left/right or other context-specific accomplishments stay separate. Update accomplishments through a training session in Admin.</p>
   </section>;
 }
 
 function Observation({ item }) {
-  return <div className="space-y-1 text-charcoal/75">{item.proficiency && <p className="capitalize">{label(item.proficiency)}</p>}{item.evidence && <p className="whitespace-pre-wrap">{item.evidence}</p>}<p className="text-xs text-charcoal/60">Recorded {displayDate(item.date)}</p></div>;
+  return <div className="space-y-1 text-charcoal/75">{item.proficiency && <p className="capitalize">{label(item.proficiency)}</p>}{item.evidence && <p className="whitespace-pre-wrap">{item.evidence}</p>}<p className="text-xs text-charcoal/60">Recorded {displayDate(item.date)}{item.source === 'ride' && ' · Ride'}</p></div>;
 }

@@ -93,7 +93,7 @@ class RideViewSet(MediaAttachmentMixin, RecordViewSet):
     serializer_class = RideSerializer
 
     def get_queryset(self):
-        return self.filter_dates(visible_rides(self.request.user).select_related("location").prefetch_related("participants__animal", "participants__rider"))
+        return self.filter_dates(visible_rides(self.request.user).select_related("location").prefetch_related("participants__animal", "participants__rider", "skill_progress__skill", "skill_progress__animal"))
 
 
 class TrainingSessionViewSet(MediaAttachmentMixin, RecordViewSet):
@@ -101,7 +101,7 @@ class TrainingSessionViewSet(MediaAttachmentMixin, RecordViewSet):
     serializer_class = TrainingSessionSerializer
 
     def get_queryset(self):
-        return self.filter_dates(TrainingSession.objects.filter(animal__in=accessible_animals(self.request.user)).select_related("animal", "location", "trainer", "ride"))
+        return self.filter_dates(TrainingSession.objects.filter(animal__in=accessible_animals(self.request.user)).select_related("animal", "location", "trainer", "ride").prefetch_related("skill_progress__skill"))
 
 
 class TrainingSkillViewSet(viewsets.ModelViewSet):

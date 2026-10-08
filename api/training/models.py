@@ -165,3 +165,21 @@ class SessionSkillProgress(Record):
         super().clean()
         if (self.proficiency or self.accomplished) and not self.evidence.strip():
             raise ValidationError({"evidence": "Describe the evidence supporting this assessment."})
+
+
+class RideSkillProgress(Record):
+    ride = models.ForeignKey(Ride, on_delete=models.CASCADE, related_name="skill_progress")
+    animal = models.ForeignKey("animals.Animal", on_delete=models.PROTECT, related_name="ride_skill_progress")
+    skill = models.ForeignKey(TrainingSkill, on_delete=models.PROTECT, related_name="ride_observations")
+    evidence = models.TextField()
+
+    class Meta:
+        ordering = ["pk"]
+        constraints = [models.UniqueConstraint(fields=["ride", "animal", "skill"], name="unique_ride_animal_skill")]
+
+    def clean(self):
+        super().clean()
+        if not self.evidence.strip():
+            raise ValidationError({"evidence": "Describe what this horse demonstrated."})
+        if self.ride_id and not self.ride.participants.filter(animal_id=self.animal_id).exists():
+            raise ValidationError({"animal": "Choose a horse on this ride."})

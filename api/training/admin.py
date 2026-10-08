@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import RidingLocation, Ride, RideParticipant, TrainingSession, TrainingSkill, SessionSkillProgress
+from .models import RidingLocation, Ride, RideParticipant, TrainingSession, TrainingSkill, SessionSkillProgress, RideSkillProgress
 
 
 class ParticipantInline(admin.TabularInline):
@@ -51,3 +51,16 @@ class TrainingSessionAdmin(CreatorAdmin):
 admin.site.register(RidingLocation, CreatorAdmin)
 admin.site.register(TrainingSkill)
 admin.site.register(SessionSkillProgress, CreatorAdmin)
+
+
+@admin.register(RideSkillProgress)
+class RideSkillProgressAdmin(admin.ModelAdmin):
+    list_display = ("ride", "animal", "skill")
+    list_filter = ("skill",)
+    search_fields = ("ride__title", "animal__name", "skill__name")
+    readonly_fields = ("created_by", "created_at", "updated_at")
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)

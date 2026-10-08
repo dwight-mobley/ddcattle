@@ -52,7 +52,9 @@ class TrainingTests(TestCase):
 
     def test_rating_latest_regression_backdate_and_coverage(self):
         old = self.session()
-        skills = list(TrainingSkill.objects.order_by("code")[:5])
+        from .rating import RUBRICS
+        codes = [code for code, _ in next(iter(RUBRICS.values()))][:5]
+        skills = list(TrainingSkill.objects.filter(code__in=codes))
         for skill in skills:
             SessionSkillProgress.objects.create(session=old, skill=skill, proficiency="mastered", evidence="Repeated success", created_by=self.user)
         rating = training_rating(self.horse)
