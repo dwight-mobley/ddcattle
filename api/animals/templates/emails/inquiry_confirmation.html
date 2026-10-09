@@ -8,3 +8,7 @@
     <br>
     <p>Best,<br>The Ranch Team</p>
 </div>
+{% if listing_title %}<p><strong>Listing:</strong> {{ listing_title }}</p>
+<p><strong>Status:</strong> {{ listing_status }}</p>
+<p><a href="{{ listing_url }}">View the listing</a></p>{% endif %}
+{% if data.phone %}<p><strong>Phone:</strong> {{ data.phone }}</p>{% endif %}

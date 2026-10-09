@@ -223,46 +223,17 @@ class BaseAnimalViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         
-        # Package the data to send to the HTML files
-        context = {
-            'animal': animal,
-            'data': data
-        }
-        
+        from .inquiry_email import inquiry_messages
         try:
-            # 1. Admin Email
-            admin_msg = EmailMultiAlternatives(
-                subject=f"New Inquiry: {animal.name} ({animal.species})",
-                body=render_to_string('emails/inquiry_admin.txt', context),
-                from_email="DD Cattle Company <inquiries@ddcattle.company>",
-                to=[os.getenv('ADMIN_EMAIL')],
-                reply_to=[data['sender_email']]
-            )
-            admin_msg.attach_alternative(render_to_string('emails/inquiry_admin.html', context), "text/html")
-
-            # 2. Sender Confirmation Email
-            sender_msg = EmailMultiAlternatives(
-                subject=f"We received your inquiry about {animal.name}",
-                body=render_to_string('emails/inquiry_confirmation.txt', context),
-                from_email="DD Cattle Company <inquiries@ddcattle.company>",
-                to=[data['sender_email']]
-            )
-            sender_msg.attach_alternative(render_to_string('emails/inquiry_confirmation.html', context), "text/html")
-
+            admin_msg, sender_msg = inquiry_messages(animal, data)
             with get_connection() as connection:
                 admin_msg.connection = connection
                 sender_msg.connection = connection
                 admin_msg.send(fail_silently=False)
                 sender_msg.send(fail_silently=False)
-            
             return Response({"detail": "Inquiry sent successfully."}, status=status.HTTP_200_OK)
-            
-        except Exception as e:
-            print(f"Failed to send email notification: {e}")
-            return Response(
-                {"detail": "Failed to send inquiry."}, 
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+        except Exception:
+            return Response({"detail": "Failed to send inquiry."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def perform_create(self, serializer):  
         try:      

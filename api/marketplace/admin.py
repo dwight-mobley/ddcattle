@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 from rest_framework.exceptions import ValidationError
-from .models import SaleListing
+from .models import SaleInquiry, SaleListing
 from .permissions import manageable_animals
 from .serializers import validate_gallery
 
@@ -59,3 +59,27 @@ class SaleListingAdmin(admin.ModelAdmin):
         if not change:
             obj.contact_user = request.user
         super().save_model(request, obj, form, change)
+
+
+@admin.register(SaleInquiry)
+class SaleInquiryAdmin(admin.ModelAdmin):
+    list_display = ("listing", "name", "created_at", "delivery_state", "handled")
+    list_filter = ("handled", "delivery_state")
+    readonly_fields = ("listing", "name", "email", "phone", "message", "submission_key", "created_at",
+                       "delivery_state", "notification_started_at", "admin_sent_at", "confirmation_sent_at")
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("listing", "listing__animal").filter(
+            listing__animal__in=manageable_animals(request.user))
+
+    def has_view_permission(self, request, obj=None):
+        return super().has_view_permission(request, obj) and (obj is None or manageable_animals(request.user).filter(pk=obj.listing.animal_id).exists())
+
+    def has_change_permission(self, request, obj=None):
+        return super().has_change_permission(request, obj) and (obj is None or manageable_animals(request.user).filter(pk=obj.listing.animal_id).exists())
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

@@ -82,6 +82,22 @@ class SaleListing(models.Model):
         return self.title
 
 class SaleInquiry(models.Model):
+    class DeliveryState(models.TextChoices):
+        LEGACY = "legacy", "Legacy (delivery unknown)"
+        PENDING = "pending", "Pending notification"
+        SENDING = "sending", "Notification started (review if stalled)"
+        SENT = "sent", "Both email sends acknowledged"
+        NEEDS_REVIEW = "needs_review", "Notification needs review"
+
+    submission_key = models.UUIDField(null=True, blank=True, editable=False)
+    delivery_state = models.CharField(max_length=20, choices=DeliveryState.choices, default=DeliveryState.LEGACY, editable=False)
+    notification_started_at = models.DateTimeField(null=True, blank=True, editable=False)
+    admin_sent_at = models.DateTimeField(null=True, blank=True, editable=False)
+    confirmation_sent_at = models.DateTimeField(null=True, blank=True, editable=False)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["listing", "submission_key"], name="unique_listing_inquiry_submission")]
+
 
     listing = models.ForeignKey(
         SaleListing,

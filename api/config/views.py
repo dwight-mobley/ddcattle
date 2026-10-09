@@ -35,7 +35,6 @@ class ContactFormView(APIView):
                 to=[os.getenv("ADMIN_EMAIL")],
                 reply_to=[data['email']]
             )
-            print(context)
             admin_msg.attach_alternative(render_to_string('emails/contact_admin.html', context), "text/html")
 
             # 2. Sender Confirmation (Optional)

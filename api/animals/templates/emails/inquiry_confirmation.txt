@@ -7,3 +7,8 @@ Your message:
 
 Best,
 The Ranch Team
+
+{% if listing_title %}Listing: {{ listing_title }}
+Status: {{ listing_status }}
+View listing: {{ listing_url }}
+{% endif %}{% if data.phone %}Phone: {{ data.phone }}{% endif %}

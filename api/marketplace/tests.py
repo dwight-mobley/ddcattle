@@ -191,6 +191,22 @@ class MarketplaceTests(TestCase):
         self.assertContains(self.client.get(url), 'PRIVATE BUYER')
         self.assertEqual(self.client.get(reverse('admin:marketplace_salelisting_delete', args=[self.listing.pk])).status_code, 403)
 
+    def test_featured_species_and_search_filters_keep_public_scope(self):
+        SaleListing.objects.filter(pk=self.listing.pk).update(featured=True)
+        self.assertEqual(self.client.get(self.public, {"featured": "true"}).data["count"], 1)
+        self.assertEqual(self.client.get(self.public, {"featured": "false"}).data["count"], 0)
+        self.assertEqual(self.client.get(self.public, {"species": "horse", "search": "Horse"}).data["count"], 1)
+        self.assertEqual(self.client.get(self.public, {"species": "cattle"}).data["count"], 0)
+        self.assertEqual(self.client.get(self.public, {"search": "PRIVATE BUYER"}).data["count"], 0)
+        for params in [{"featured": "yes"}, {"species": "invalid"}, {"search": "x" * 101}]:
+            self.assertEqual(self.client.get(self.public, params).status_code, 400)
+        for changes in [{"published": False}, {"active": False}, {"status": "sold"}]:
+            SaleListing.objects.filter(pk=self.listing.pk).update(**changes)
+            self.assertEqual(self.client.get(self.public, {"featured": "true"}).data["count"], 0)
+            SaleListing.objects.filter(pk=self.listing.pk).update(published=True, active=True, status="available")
+        Animal.objects.filter(pk=self.animal.pk).update(public=False)
+        self.assertEqual(self.client.get(self.public, {"featured": "true"}).data["count"], 0)
+
 
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
@@ -220,8 +236,15 @@ class ListingMigrationTests(TransactionTestCase):
                 MigrationExecutor(connection).migrate(original_targets)
             self.assertEqual(Listing.objects.get(pk=ids[0]).price, Decimal("-1"))
             Listing.objects.filter(pk=ids[0]).update(price=None)
+            LegacyInquiry = apps.get_model("marketplace", "SaleInquiry")
+            legacy_inquiry = LegacyInquiry.objects.create(listing_id=ids[0], name="Legacy visitor", email="legacy@example.com", message="Existing message", handled=True)
             executor = MigrationExecutor(connection)
             executor.migrate(original_targets)
+            from marketplace.models import SaleInquiry
+            migrated = SaleInquiry.objects.get(pk=legacy_inquiry.pk)
+            self.assertEqual(migrated.delivery_state, "legacy")
+            self.assertIsNone(migrated.submission_key)
+            self.assertTrue(migrated.handled)
             self.assertEqual(list(SaleListing.objects.filter(pk__in=ids).order_by("pk").values_list("active", flat=True)), [True, False])
             self.assertEqual(SaleListing.objects.filter(pk__in=ids, published=False, status="available").count(), 2)
             self.assertEqual(APIClient().get(reverse("sale-listing-list")).data["count"], 0)

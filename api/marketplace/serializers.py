@@ -87,3 +87,13 @@ class StaffSaleListingSerializer(serializers.ModelSerializer):
         except ModelValidationError as exc:
             raise serializers.ValidationError(exc.message_dict)
         return attrs
+
+
+from animals.serializers import AnimalInquirySerializer
+
+
+class ListingInquirySerializer(AnimalInquirySerializer):
+    sender_email = serializers.EmailField(max_length=254)
+    submission_key = serializers.UUIDField()
+    phone = serializers.CharField(max_length=50, allow_blank=True, required=False, default="")
+    honeypot = serializers.CharField(max_length=200, allow_blank=True, required=False, default="")

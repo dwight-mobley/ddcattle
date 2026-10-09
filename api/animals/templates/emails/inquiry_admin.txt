@@ -4,3 +4,8 @@ From: {{ data.sender_name }} ({{ data.sender_email }})
 
 Message:
 {{ data.message }}
+
+{% if listing_title %}Listing: {{ listing_title }}
+Status: {{ listing_status }}
+View listing: {{ listing_url }}
+{% endif %}{% if data.phone %}Phone: {{ data.phone }}{% endif %}
