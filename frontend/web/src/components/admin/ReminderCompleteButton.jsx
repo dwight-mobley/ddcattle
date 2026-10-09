@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import ReminderCompleteDialog from './ReminderCompleteDialog';
 import { primaryClasses } from './ReminderFields';

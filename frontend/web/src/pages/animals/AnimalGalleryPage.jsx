@@ -1,4 +1,3 @@
-import React from 'react';
 import MediaGallery from '../../components/MediaGallery';
 import { useOutletContext } from 'react-router-dom';
 

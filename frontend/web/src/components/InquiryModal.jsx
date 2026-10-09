@@ -1,129 +1,87 @@
-// components/InquiryModal.jsx
-import React, { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSendAnimalInquiryMutation } from '../features/api/animalApi';
-import Loader from './Loader';
+import { useSendListingInquiryMutation } from '../features/api/marketplaceApi';
 
-export default function InquiryModal({ isOpen, onClose, animal, slug }) {
-  const [formData, setFormData] = useState({ sender_name: '', sender_email: '', message: '' });
-  const [sendInquiry, { isLoading, isError }] = useSendAnimalInquiryMutation();
-  const [isSuccessState, setIsSuccess] = useState(false);
+function InquiryForm({ onClose, animal, slug, listingId }) {
+  const [form, setForm] = useState({ sender_name: '', sender_email: '', phone: '', message: '', honeypot: '' });
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
+  const submission = useRef(null);
+  const inFlight = useRef(false);
+  const dialog = useRef(null);
+  const [sendAnimalInquiry, animalState] = useSendAnimalInquiryMutation();
+  const [sendListingInquiry, listingState] = useSendListingInquiryMutation();
+  const busy = animalState.isLoading || listingState.isLoading;
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    const previousFocus = document.activeElement;
+    const element = dialog.current;
+    element.showModal();
+    element.querySelector('[name="sender_name"]')?.focus();
+    return () => { element.close(); previousFocus?.focus(); };
+  }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (result) dialog.current?.querySelector('[data-inquiry-done]')?.focus();
+  }, [result]);
+
+  function trapTab(event) {
+    if (event.key !== 'Tab') return;
+    const controls = [...dialog.current.querySelectorAll('button:not(:disabled), input:not(:disabled):not([tabindex="-1"]), textarea:not(:disabled)')];
+    if (!controls.length) { event.preventDefault(); dialog.current.focus(); return; }
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
+
+  function update(event) {
+    setForm(previous => ({ ...previous, [event.target.name]: event.target.value }));
+    submission.current = null; // Edited message is a new intentional submission.
+    setError('');
+  }
+
+  async function submit(event) {
+    event.preventDefault();
+    if (inFlight.current || result) return;
+    inFlight.current = true;
+    setError('');
     try {
-      if (formData.honeypot) {
-        setIsSuccess(true);
-        return;
+      let response;
+      if (listingId) {
+        submission.current ??= crypto.randomUUID();
+        response = await sendListingInquiry({ id: listingId, data: { ...form, submission_key: submission.current } }).unwrap();
+      } else {
+        response = await sendAnimalInquiry({ slug, data: form }).unwrap();
       }
-        console.log({ slug: slug, data: formData })
-      await sendInquiry({ slug: slug, data: formData }).unwrap();
-      setIsSuccess(true);
-      setTimeout(() => {
-        onClose();
-        setFormData({ sender_name: '', sender_email: '', message: '' });
-        setIsSuccess(false);
-      }, 2000);
-    } catch (err) {
-      console.error("Failed to send inquiry: ", err);
-    }
-  };
-
-
-
+      setResult(response.detail);
+    } catch (failure) {
+      if (failure.status === 429) setError('Too many inquiries. Please try again later.');
+      else if (failure.status === 404) setError('This listing is no longer available. Please return to the storefront.');
+      else if (failure.data?.detail) setError(failure.data.detail);
+      else if (failure.status === 400) setError('Please check your name, email and message.');
+      else setError('We couldn’t confirm your submission. Try again with the same message to avoid a duplicate inquiry.');
+    } finally { inFlight.current = false; }
+  }
+  const input = 'mt-2 w-full rounded-lg border border-saddle-brown/25 bg-white p-3 text-charcoal focus:outline-none focus:ring-2 focus:ring-rust';
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/80 p-4">
-        
-      <div className="bg-desert-sand w-full max-w-lg rounded-xl shadow-2xl overflow-hidden relative">
-        
-        {/* Modal Header */}
-        <div className="bg-saddle-brown p-6 text-center relative">
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-4 text-sage hover:text-desert-sand transition-colors"
-          >
-            &#x2715; {/* Close Icon */}
-          </button>
-          <h2 className="text-2xl font-serif text-desert-sand">
-            Inquire About {animal.name}
-          </h2>
-        </div>
-
-        {/* Modal Body */}
-        <div className="p-8">
-            
-          {isSuccessState ? (
-            <div className="text-center py-8">
-              <div className="text-sage text-5xl mb-4">&#10003;</div>
-              <h3 className="text-xl font-serif text-saddle-brown mb-2">Inquiry Sent!</h3>
-              <p className="text-charcoal/80">We will get back to you shortly.</p>
-            </div>
-          ) : isLoading ? (
-            <div className="h-100 w-100 flex items-center justify-center ">
-                <Loader fullScreen={false} />
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6 text-sm">
-              <input type="hidden" name="honeypot" value="" />
-              <div>
-                <label className="block text-sage font-bold uppercase tracking-widest mb-2">Your Name</label>
-                <input 
-                  type="text" 
-                  required
-                  className="w-full p-3 rounded-lg border border-sage/30 bg-white text-charcoal focus:outline-none focus:border-rust"
-                  value={formData.sender_name}
-                  onChange={(e) => setFormData({...formData, sender_name: e.target.value})}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sage font-bold uppercase tracking-widest mb-2">Email Address</label>
-                <input 
-                  type="email" 
-                  required
-                  className="w-full p-3 rounded-lg border border-sage/30 bg-white text-charcoal focus:outline-none focus:border-rust"
-                  value={formData.sender_email}
-                  onChange={(e) => setFormData({...formData, sender_email: e.target.value})}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sage font-bold uppercase tracking-widest mb-2">Message</label>
-                <textarea 
-                  required
-                  rows="4"
-                  className="w-full p-3 rounded-lg border border-sage/30 bg-white text-charcoal focus:outline-none focus:border-rust resize-none"
-                  value={formData.message}
-                  onChange={(e) => setFormData({...formData, message: e.target.value})}
-                  placeholder={`I'd love to learn more about ${animal.name}...`}
-                ></textarea>
-              </div>
-
-              {isError && (
-                <p className="text-rust text-sm font-semibold">Failed to send. Please try again.</p>
-              )}
-
-              <div className="pt-2 flex justify-end gap-4">
-                <button 
-                  type="button" 
-                  onClick={onClose}
-                  className="px-6 py-3 text-saddle-brown font-semibold uppercase tracking-widest hover:text-rust transition-colors"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  disabled={isLoading}
-                  className="px-6 py-3 bg-rust text-white font-semibold rounded-lg hover:bg-saddle-brown transition-all uppercase tracking-widest shadow-md disabled:opacity-50"
-                >
-                  {isLoading ? 'Sending...' : 'Send Message'}
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
-      </div>
-    </div>
+    <dialog ref={dialog} tabIndex={-1} onKeyDown={trapTab} aria-labelledby="inquiry-heading" onCancel={event => { event.preventDefault(); if (!inFlight.current) onClose(); }} className="m-auto max-h-[90dvh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-xl bg-desert-sand p-6 text-charcoal shadow-2xl backdrop:bg-charcoal/70 sm:p-8">
+      <div className="flex items-start justify-between gap-4"><h2 id="inquiry-heading" className="font-serif text-2xl text-saddle-brown">Inquire about {animal.name}</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close inquiry" className="rounded-lg px-3 py-1 text-xl text-saddle-brown disabled:opacity-40">×</button></div>
+      {result ? <div className="mt-6"><p role="status">{result}</p><button data-inquiry-done onClick={onClose} className="mt-6 rounded-lg bg-rust px-6 py-3 font-semibold text-white">Done</button></div> : <form onSubmit={submit} className="mt-6 space-y-5">
+        <fieldset disabled={busy} className="space-y-5">
+          <div className="absolute -left-[10000px]" aria-hidden="true"><label>Leave this field empty<input name="honeypot" value={form.honeypot} onChange={update} tabIndex={-1} autoComplete="off" /></label></div>
+          <label className="block text-sm font-semibold text-saddle-brown">Your name<input autoFocus name="sender_name" autoComplete="name" required maxLength={100} value={form.sender_name} onChange={update} className={input} /></label>
+          <label className="block text-sm font-semibold text-saddle-brown">Email address<input name="sender_email" type="email" autoComplete="email" required maxLength={254} value={form.sender_email} onChange={update} className={input} /></label>
+          {listingId && <label className="block text-sm font-semibold text-saddle-brown">Phone (optional)<input name="phone" type="tel" autoComplete="tel" maxLength={50} value={form.phone} onChange={update} className={input} /></label>}
+          <label className="block text-sm font-semibold text-saddle-brown">Message<textarea name="message" required maxLength={1000} rows={4} value={form.message} onChange={update} className={input} /></label>
+        </fieldset>
+        {error && <p role="alert" className="text-sm text-rust">{error}</p>}
+        <div className="flex justify-end gap-4"><button type="button" onClick={onClose} disabled={busy} className="rounded-lg px-4 py-3 font-semibold text-saddle-brown disabled:opacity-40">Cancel</button><button type="submit" disabled={busy} className="rounded-lg bg-rust px-6 py-3 font-semibold text-white disabled:opacity-40">{busy ? 'Submitting…' : 'Send inquiry'}</button></div>
+      </form>}
+    </dialog>
   );
+}
+
+export default function InquiryModal({ isOpen, ...props }) {
+  return isOpen ? <InquiryForm key={props.listingId || props.slug} {...props} /> : null;
 }

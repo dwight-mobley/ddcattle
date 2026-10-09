@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useGetRemindersQuery } from '../../features/api/reminderApi';
 import ReminderCompleteButton from '../../components/admin/ReminderCompleteButton';

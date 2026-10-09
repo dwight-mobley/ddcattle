@@ -463,14 +463,9 @@ export default function Dashboard() {
     } = useGetMedicalRecordsQuery();
 
 
-    const reminders = Array.isArray(reminderData)
-        ? reminderData
-        : reminderData?.results || [];
+    const reminders = useMemo(() => Array.isArray(reminderData) ? reminderData : reminderData?.results || [], [reminderData]);
 
-    const medicalRecords =
-        Array.isArray(medicalData)
-            ? medicalData
-            : medicalData?.results || [];
+    const medicalRecords = useMemo(() => Array.isArray(medicalData) ? medicalData : medicalData?.results || [], [medicalData]);
 
 
     const today = localDateString();

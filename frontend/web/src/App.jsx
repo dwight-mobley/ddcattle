@@ -1,4 +1,8 @@
 
+import MarketplaceAdmin from './pages/admin/MarketplaceAdmin';
+import ListingEditor from './pages/admin/ListingEditor';
+import Storefront from './pages/marketplace/Storefront';
+import ListingDetail from './pages/marketplace/ListingDetail';
 import RanchHome from './pages/Home';
 import ActivitiesAdmin from './pages/admin/ActivitiesAdmin';
 import TrainingSkillsAdmin from './pages/admin/TrainingSkillsAdmin';
@@ -25,7 +29,7 @@ import ErrorPage from './pages/Error';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import Loading from './components/Loader';
 import RequireAdmin from './components/auth/RequireAuth';
 import MedicalRecordsAdmin from './pages/admin/MedicalRecordsAdmin';
@@ -39,6 +43,9 @@ const router = createBrowserRouter([
             { path: 'login', element: <Login /> },
             { path: 'about', element: <About /> },
             { path: 'contact', element: <Contact /> },
+            { path: 'marketplace', element: <Storefront /> },
+            { path: 'marketplace/:id', element: <ListingDetail /> },
+            { path: 'storefront', element: <Navigate to="/marketplace" replace /> },
             { path: 'barn', element: <TheBarn /> },
             {
                 path: 'animals/:slug',
@@ -58,6 +65,9 @@ const router = createBrowserRouter([
         children: [
             { path: '', index: true, element: <Dashboard /> },
             { path: 'dashboard', element: <Dashboard /> },
+            { path: 'marketplace', element: <MarketplaceAdmin /> },
+            { path: 'marketplace/new', element: <ListingEditor /> },
+            { path: 'marketplace/:id/edit', element: <ListingEditor /> },
             { path: 'animals', element: <AnimalsAdmin /> },
             { path: 'animals/new', element: <AnimalCreate /> },
             { path: 'animals/:slug/edit', element: <AnimalEdit /> },

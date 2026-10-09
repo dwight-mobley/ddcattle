@@ -1,12 +1,4 @@
-import React from 'react';
 
-function formatDate(date) {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(new Date(date));
-}
 
 export default function TimelineMedicalEvent({ event }) {
   const { data } = event;

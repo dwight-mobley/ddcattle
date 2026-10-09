@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { setCredentials, logOut } from '../auth/authSlice';
 
-const API_URL = import.meta.env.MODE !== 'development' ? import.meta.env.VITE_API_URL : 'http://localhost:8000';
+const API_URL = import.meta.env.DEV ? (import.meta.env.VITE_DEV_API_URL || 'http://localhost:8000') : import.meta.env.VITE_API_URL;
 const baseQuery = fetchBaseQuery({
     baseUrl: `${API_URL}/api/`,
     prepareHeaders: (headers, { getState }) => {
@@ -29,7 +29,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const baseApi = createApi({
     reducerPath: 'api',
     baseQuery: baseQueryWithReauth,
-    tagTypes: ['Animal', 'Horse', 'Dog', 'Cattle', 'MedicalRecord', 'Account', 'Reminder', 'Media', 'Training'],
+    tagTypes: ['Animal', 'Horse', 'Dog', 'Cattle', 'MedicalRecord', 'Account', 'Reminder', 'Media', 'Training', 'SaleListing', 'ManagedSaleListing', 'ListingAnimals'],
     endpoints: () => ({}),
 });
 

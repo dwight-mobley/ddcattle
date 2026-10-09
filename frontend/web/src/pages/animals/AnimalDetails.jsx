@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
 import { useGetAnimalBySlugQuery } from '../../features/api/animalApi';
 import ImageWithLoader from '../../components/ImageWithLoader';

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import {
@@ -194,9 +194,7 @@ export default function MedicalRecordsAdmin() {
     const [recordToDelete, setRecordToDelete] = useState(null);
     const [deleteError, setDeleteError] = useState('');
 
-    const records = Array.isArray(data)
-        ? data
-        : data?.results || [];
+    const records = useMemo(() => Array.isArray(data) ? data : data?.results || [], [data]);
 
     const animals = useMemo(() => {
         const map = new Map();
@@ -279,7 +277,7 @@ export default function MedicalRecordsAdmin() {
             ).unwrap();
 
             setRecordToDelete(null);
-        } catch (err) {
+        } catch {
             setDeleteError(
                 'Unable to delete this medical record.'
             );

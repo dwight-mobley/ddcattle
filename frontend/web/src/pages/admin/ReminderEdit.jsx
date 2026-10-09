@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReminderForm from '../../components/forms/ReminderForm';
 import { useGetReminderByIdQuery, useUpdateReminderMutation } from '../../features/api/reminderApi';

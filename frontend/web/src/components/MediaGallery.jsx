@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGetMediaQuery } from '../features/api/mediaApiSlice';
 import ImageWithLoader from './ImageWithLoader';
 import VideoWithLoader from './VideoWithLoader';

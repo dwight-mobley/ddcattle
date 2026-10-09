@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {  useDispatch } from "react-redux";
 import { useAuth } from "../../features/auth/useAuth";
@@ -11,6 +11,7 @@ import Loader from "../Loader";
 const links = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
+  { name: "Storefront", path: "/marketplace" },
   { name: "Barn", path: "/barn" },
   { name: "Contact", path: "/contact" },
 ];
@@ -114,6 +115,8 @@ export default function Navbar() {
           type="button"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle navigation menu"
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="mobile-navigation"
           className="flex h-10 w-10 items-center justify-center rounded-lg text-saddle-brown transition-colors hover:bg-saddle-brown/5 md:hidden"
         >
           <svg
@@ -137,7 +140,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-saddle-brown/10 bg-desert-sand px-6 py-4 shadow-lg">
+        <div id="mobile-navigation" className="md:hidden border-t border-saddle-brown/10 bg-desert-sand px-6 py-4 shadow-lg">
           <div className="flex flex-col space-y-4">
             {links.map((link) => {
               const isActive =
@@ -170,7 +173,7 @@ export default function Navbar() {
                 >
                   Admin Panel
                 </Link>
-              ) : isLoggedIn ? (
+              ) : isAuthenticated ? (
                 <button
                   onClick={handleLogout}
                   className="block w-full text-left py-2 text-base font-medium text-rust hover:text-rust/80 transition-colors"

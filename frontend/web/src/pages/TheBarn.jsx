@@ -4,28 +4,8 @@ import { AnimalCard } from "../components/AnimalCard";
 import Loader from "../components/Loader";
 import AnimalResponseNotificationError from "../components/AnimalResponseNotificationError";
 
-const speciesLabels = {
-    horse: "Horses",
-    dog: "Dogs",
-    cattle: "Cattle",
-    other: "Other",
-};
 
-const statusLabels = {
-    active: "Active",
-    sold: "Sold",
-    deceased: "Deceased",
-    inactive: "Inactive",
-    other: "Other",
-};
 
-const statusStyles = {
-    active: "bg-sage/15 text-sage",
-    sold: "bg-rust/10 text-rust",
-    deceased: "bg-charcoal/10 text-charcoal",
-    inactive: "bg-saddle-brown/10 text-saddle-brown",
-    other: "bg-charcoal/10 text-charcoal",
-};
 
 
 

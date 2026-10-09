@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimalForm from '../../components/forms/AnimalForm';
 import { useAddAnimalMutation } from '../../features/api/animalApi';

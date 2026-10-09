@@ -18,4 +18,5 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  { files: ['src/sw.js'], languageOptions: { globals: globals.serviceworker } },
 ])

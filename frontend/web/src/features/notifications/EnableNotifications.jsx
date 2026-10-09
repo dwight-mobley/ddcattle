@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import {
   useDeletePushSubscriptionMutation,
@@ -44,7 +44,7 @@ export default function EnableNotifications() {
   ] = useDeletePushSubscriptionMutation()
 
 
-  async function syncSubscription(subscription) {
+  const syncSubscription = useCallback(async (subscription) => {
     const subscriptionJson = subscription.toJSON()
 
     await registerPushSubscription({
@@ -55,7 +55,7 @@ export default function EnableNotifications() {
     }).unwrap()
 
     await refetchSubscriptions()
-  }
+  }, [registerPushSubscription, refetchSubscriptions])
 
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function EnableNotifications() {
     }
 
     checkSubscription()
-  }, [])
+  }, [supported, syncSubscription])
 
 
   async function enableNotifications() {

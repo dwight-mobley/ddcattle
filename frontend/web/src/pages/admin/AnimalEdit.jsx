@@ -1,5 +1,4 @@
 // pages/admin/AnimalEdit.jsx
-import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AnimalForm from '../../components/forms/AnimalForm';
 import { useGetAnimalBySlugQuery, useUpdateAnimalMutation } from '../../features/api/animalApi';

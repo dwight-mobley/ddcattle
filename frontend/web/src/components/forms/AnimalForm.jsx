@@ -1,7 +1,12 @@
 // components/admin/AnimalForm.jsx
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetHorseBreedsQuery, useGetDogBreedsQuery } from '../../features/api/animalApi';
+
+function normalizeSex(species, sex) {
+    const choices = species === 'horse' ? ['unknown', 'stallion', 'gelding', 'mare', 'filly', 'colt'] : ['unknown', 'male', 'female'];
+    return choices.includes(sex) ? sex : 'unknown';
+}
 
 export default function AnimalForm({ initialData = {}, onSubmit, isLoading }) {
     const navigate = useNavigate();
@@ -12,7 +17,7 @@ export default function AnimalForm({ initialData = {}, onSubmit, isLoading }) {
         // Base Animal Fields
         name: initialData.name || '',
         species: initialData.species || 'horse',
-        sex: initialData.sex || 'unknown',
+        sex: normalizeSex(initialData.species || 'horse', initialData.sex || 'unknown'),
         birth_date: initialData.birth_date || '',
         weight: initialData.weight || '',
         color: initialData.color || '',
@@ -37,22 +42,12 @@ export default function AnimalForm({ initialData = {}, onSubmit, isLoading }) {
         breed: initialData.breed || '',
     });
 
-    // Reset sex to 'unknown' if species changes to prevent validation errors
-    useEffect(() => {
-        if (formData.species === 'horse' && ['male', 'female'].includes(formData.sex)) {
-            setFormData(prev => ({ ...prev, sex: 'unknown' }));
-        } else if (formData.species !== 'horse' && ['stallion', 'gelding', 'mare', 'filly', 'colt'].includes(formData.sex)) {
-            setFormData(prev => ({ ...prev, sex: 'unknown' }));
-        }
-       
-    }, [formData.species, formData.sex]);
-
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
+        setFormData(prev => {
+            const next = { ...prev, [name]: type === 'checkbox' ? checked : value };
+            return { ...next, sex: normalizeSex(next.species, next.sex) };
+        });
     };
 
     const handleSubmit = (e) => {

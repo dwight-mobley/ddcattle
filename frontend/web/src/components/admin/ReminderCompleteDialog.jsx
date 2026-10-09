@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCompleteReminderMutation } from '../../features/api/reminderApi';
 import { errorText, localDateTime } from './reminderUtils';
 import { ErrorMessage, Field, inputClasses, primaryClasses, secondaryClasses } from './ReminderFields';

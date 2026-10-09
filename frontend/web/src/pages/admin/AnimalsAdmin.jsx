@@ -1,5 +1,5 @@
 // pages/admin/AnimalsAdmin.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useGetAnimalsQuery, useDeleteAnimalMutation } from '../../features/api/animalApi';
 

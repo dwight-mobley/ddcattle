@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams } from 'react-router-dom';
 import AnimalTimeline from '../../components/animals/timeline/AnimalTimeline';
 import { useOutletContext } from 'react-router-dom';

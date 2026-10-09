@@ -1,14 +1,8 @@
-import React from 'react';
-import { useGetHorsesQuery } from '../features/horse/horseApi';
 import { Link } from 'react-router-dom';
-import { HorseCard } from '../components/HorseCard';
-import { useGetFeaturedAnimalsQuery } from '../features/api/animalApi';
-import Loader from '../components/Loader';
-import { AnimalCard } from '../components/AnimalCard';
-import AnimalResponseNotificationError from '../components/AnimalResponseNotificationError';
+import FeaturedListings from '../components/marketplace/FeaturedListings';
+import EngravingShop from '../components/marketplace/EngravingShop';
 
 export default function RanchHome() {
-  const { data: featuredAnimals = [], isLoading, isError } = useGetFeaturedAnimalsQuery();
 
   return (
     <main className="w-full min-h-screen">
@@ -29,9 +23,10 @@ export default function RanchHome() {
           <p className="mt-6 text-lg md:text-xl text-desert-sand/90 font-light max-w-2xl drop-shadow-md">
             Preserving the heritage, resilience, and natural conformation of the American Mustang.
           </p>
-          <Link to="/barn" className="mt-10 px-8 py-4 bg-rust text-desert-sand font-semibold rounded-xl hover:bg-saddle-brown transition-all duration-300 uppercase tracking-wider text-sm border border-transparent hover:border-desert-sand/50 shadow-xl">
-            Tour The Barn
+          <Link to="/marketplace" className="mt-10 px-8 py-4 bg-rust text-desert-sand font-semibold rounded-xl hover:bg-saddle-brown transition-all duration-300 uppercase tracking-wider text-sm border border-transparent hover:border-desert-sand/50 shadow-xl">
+            Visit The Storefront
           </Link>
+          <Link to="/barn" className="mt-5 font-semibold text-desert-sand underline underline-offset-4">Tour the barn</Link>
         </div>
       </section>
 
@@ -60,33 +55,8 @@ export default function RanchHome() {
         </div>
       </section>
 
-      {/* Grid Showcase: Mapping RTK Query Data */}
-      <section className="bg-sage/15 py-24 border-y border-sage/30">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h3 className="text-4xl font-serif text-saddle-brown mb-4">DD Spotlight</h3>
-          <p className="text-charcoal/70 max-w-2xl mx-auto mb-16">
-            Checkout our featured animals in the spotlight section below.
-          </p>
-          <div className="flex justify-center items-center">
-            {isLoading ? (
-              <Loader fullScreen={false} />
-            ) : isError ? (
-              <AnimalResponseNotificationError />
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 text-left">
-                {featuredAnimals.map(fa => (
-                  <AnimalCard
-                    key={fa.id}
-                    animal={fa}
-                  />
-                ))}
-              </div>
-            )}
-
-
-          </div>
-        </div>
-      </section>
+      <FeaturedListings />
+      <div className="mx-auto max-w-7xl px-6 py-20"><EngravingShop /></div>
 
     </main>
   );
