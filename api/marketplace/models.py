@@ -1,10 +1,44 @@
 from django.conf import settings
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 
 from animals.models.animal import Animal
 
 
 class SaleListing(models.Model):
+    class Status(models.TextChoices):
+        AVAILABLE = "available", "Available"
+        PENDING = "pending", "Pending"
+        SOLD = "sold", "Sold"
+
+    # Publication is opt-in; legacy active values are retained without publishing.
+    published = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.AVAILABLE)
+    gallery = models.ManyToManyField("media_library.AnimalMedia", blank=True, related_name="sale_listings")
+    actual_sale_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, validators=[MinValueValidator(0)])
+    sale_date = models.DateField(null=True, blank=True)
+    buyer_name = models.CharField(max_length=150, blank=True)
+    buyer_email = models.EmailField(blank=True)
+    buyer_phone = models.CharField(max_length=50, blank=True)
+    internal_notes = models.TextField(blank=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(condition=models.Q(price__gte=0) | models.Q(price__isnull=True), name="listing_price_nonnegative"),
+            models.CheckConstraint(condition=models.Q(actual_sale_price__gte=0) | models.Q(actual_sale_price__isnull=True), name="listing_actual_price_nonnegative"),
+            models.CheckConstraint(condition=models.Q(status__in=["available", "pending", "sold"]), name="listing_valid_status"),
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.published and self.animal_id and not self.animal.public:
+            raise ValidationError({"published": "Only explicitly public animals can be published."})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
 
     animal = models.OneToOneField(
         Animal,
@@ -17,6 +51,7 @@ class SaleListing(models.Model):
     description = models.TextField()
 
     price = models.DecimalField(
+        validators=[MinValueValidator(0)],
         max_digits=12,
         decimal_places=2,
         null=True,

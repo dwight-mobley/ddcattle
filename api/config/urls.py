@@ -26,6 +26,7 @@ urlpatterns = [
     path("api/", include("animals.urls")),
     path("api/", include("media_library.urls")),
     path("api/medical/", include("medical.urls")),
+    path("api/marketplace/", include("marketplace.urls")),
     path("api/training/", include("training.urls")),
     path("api/reminders/", include("reminders.urls")),
     path("anymail/", include("anymail.urls")),
