@@ -53,13 +53,23 @@ class PublicSaleListingSerializer(serializers.ModelSerializer):
         return data
 
 
+class StaffListingAnimalSerializer(PublicAnimalSerializer):
+    listing_id = serializers.IntegerField(source="sale_listing.pk", read_only=True, default=None)
+
+    class Meta(PublicAnimalSerializer.Meta):
+        fields = (*PublicAnimalSerializer.Meta.fields, "public", "listing_id")
+
+
 class StaffSaleListingSerializer(serializers.ModelSerializer):
+    animal_summary = StaffListingAnimalSerializer(source="animal", read_only=True)
+    public_preview = PublicSaleListingSerializer(source="*", read_only=True)
+
     class Meta:
         model = SaleListing
         fields = ("id", "animal", "title", "description", "price", "show_price", "active",
                   "published", "status", "featured", "gallery", "contact_user",
                   "actual_sale_price", "sale_date", "buyer_name", "buyer_email",
-                  "buyer_phone", "internal_notes", "created_at", "updated_at")
+                  "buyer_phone", "internal_notes", "created_at", "updated_at", "animal_summary", "public_preview")
         read_only_fields = ("id", "contact_user", "created_at", "updated_at")
 
     def get_fields(self):

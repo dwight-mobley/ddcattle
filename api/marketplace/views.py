@@ -23,7 +23,7 @@ class ListingPagination(PageNumberPagination):
 
 
 def listing_queryset():
-    return SaleListing.objects.select_related("animal").prefetch_related(
+    return SaleListing.objects.select_related("animal", "animal__sale_listing").prefetch_related(
         Prefetch("gallery", queryset=AnimalMedia.objects.order_by("sort_order", "id"))
     ).order_by("-featured", "-created_at", "-id")
 
@@ -104,3 +104,43 @@ class StaffSaleListingViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
 
     def perform_create(self, serializer):
         serializer.save(contact_user=self.request.user)
+
+
+class StaffListingAnimalViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = [IsMarketplaceStaff]
+    pagination_class = ListingPagination
+
+    def get_serializer_class(self):
+        from .serializers import StaffListingAnimalSerializer
+        return StaffListingAnimalSerializer
+
+    def get_queryset(self):
+        qs = manageable_animals(self.request.user).select_related("sale_listing").order_by("name", "id")
+        unlisted = self.request.query_params.get("unlisted")
+        if unlisted is not None:
+            if unlisted not in ("true", "false"):
+                raise ValidationError({"unlisted": "Use true or false."})
+            qs = qs.filter(sale_listing__isnull=unlisted == "true")
+        search = self.request.query_params.get("search", "").strip()
+        if len(search) > 100:
+            raise ValidationError({"search": "Use at most 100 characters."})
+        if search:
+            qs = qs.filter(name__icontains=search)
+        return qs
+
+
+class StaffListingMediaViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = [IsMarketplaceStaff]
+    pagination_class = ListingPagination
+
+    def get_serializer_class(self):
+        from .serializers import PublicMediaSerializer
+        return PublicMediaSerializer
+
+    def get_queryset(self):
+        animal_id = self.request.query_params.get("animal", "")
+        if not animal_id.isdigit() or len(animal_id) > 18 or int(animal_id) < 1:
+            raise ValidationError({"animal": "Select an animal."})
+        animal = get_object_or_404(manageable_animals(self.request.user), pk=animal_id)
+        return AnimalMedia.objects.filter(animal=animal, public=True, media_type__in=["image", "video"],
+            content_type__isnull=True, object_id__isnull=True).order_by("sort_order", "id")
