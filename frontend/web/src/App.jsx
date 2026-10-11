@@ -1,4 +1,7 @@
 
+import { lazy, Suspense } from 'react';
+const RecordedTracksAdmin = lazy(() => import('./pages/admin/RecordedTracksAdmin'));
+const recordedTracksPage = <Suspense fallback={<p role="status">Loading private rides…</p>}><RecordedTracksAdmin /></Suspense>;
 import MarketplaceAdmin from './pages/admin/MarketplaceAdmin';
 import ListingEditor from './pages/admin/ListingEditor';
 import Storefront from './pages/marketplace/Storefront';
@@ -55,7 +58,9 @@ const router = createBrowserRouter([
                     { path: 'timeline', element: <AnimalTimelinePage /> },
                     { path: 'gallery', element: <AnimalGalleryPage /> },
                     { path: 'training', element: <AnimalActivitiesPage kind="sessions" /> },
-                    { path: 'rides', element: <AnimalActivitiesPage kind="rides" /> },
+                    { path: 'recorded-tracks', element: recordedTracksPage },
+            { path: 'recorded-tracks/:id', element: recordedTracksPage },
+            { path: 'rides', element: <AnimalActivitiesPage kind="rides" /> },
                 ],
             },
         ],
@@ -80,6 +85,8 @@ const router = createBrowserRouter([
             { path: 'medical/new', element: <MedicalRecordCreate /> },
             { path: 'medical/:id/edit', element: <MedicalRecordEdit /> },
             { path: 'settings', element: <AdminSettings /> },
+            { path: 'recorded-tracks', element: recordedTracksPage },
+            { path: 'recorded-tracks/:id', element: recordedTracksPage },
             { path: 'rides', element: <ActivitiesAdmin kind="rides" /> },
             { path: 'rides/:slug', element: <ActivitiesAdmin kind="rides" /> },
             { path: 'training', element: <ActivitiesAdmin kind="sessions" /> },

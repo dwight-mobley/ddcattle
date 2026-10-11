@@ -8,6 +8,7 @@ const sidebarNavigation = [
     { name: 'Media Library', href: '/admin/media', icon: 'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z' },
     { name: 'Medical Records', href: '/admin/medical', icon: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z' },
     { name: 'Rides', href: '/admin/rides', icon: 'M3 13h18v2H3zM5 5h14v2H5zM5 19h14v2H5z' },
+    { name: 'Recorded rides', href: '/admin/recorded-tracks', icon: 'M3 13h18v2H3zM5 5h14v2H5zM5 19h14v2H5z' },
     { name: 'Training', href: '/admin/training', icon: 'M9 16.2l-3.5-3.5L4.1 14.1 9 19l12-12-1.4-1.4z' },
     { name: 'Skills', href: '/admin/skills', icon: 'M9 16.2l-3.5-3.5L4.1 14.1 9 19l12-12-1.4-1.4z' },
     { name: 'Settings', href: '/admin/settings', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z' }
@@ -57,7 +58,7 @@ export default function DashboardLayout() {
             <main className="min-w-0 flex-1 md:overflow-y-auto">
                 <div className="min-h-16 md:h-20 border-b border-saddle-brown/10 bg-white/50 backdrop-blur-sm flex items-center px-4 md:px-8 sticky top-0 z-10">
                     <h1 className="min-w-0 break-words text-xl md:text-2xl font-serif font-bold text-charcoal capitalize">
-                        {location.pathname.split('/').pop() || 'Overview'}
+                        {location.pathname.startsWith('/admin/recorded-tracks') ? 'Recorded rides' : location.pathname.split('/').pop() || 'Overview'}
                     </h1>
                 </div>
                 <div className="min-w-0 p-3 sm:p-6 md:p-8 max-w-5xl mx-auto">
