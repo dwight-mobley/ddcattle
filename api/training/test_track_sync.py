@@ -176,3 +176,17 @@ class PrivateTrackTests(TestCase):
         self.assertEqual(response.data["state"],"COMPLETE")
         self.assertEqual(RecordedTrack.objects.get(pk=id).manifest["expected_samples"],501)
         self.assertEqual(RecordedTrackBatch.objects.filter(track_id=id).count(),2)
+
+    def test_private_map_reads_are_owner_scoped_completed_only_and_bounded(self):
+        id,request,batches=self.create([point(i) for i in range(501)])
+        url=f"{BASE}{id}/samples/"
+        self.assertEqual(self.client.get(url).status_code,400)
+        for i,b in enumerate(batches):self.assertEqual(self.batch(id,i,b).status_code,200)
+        self.assertEqual(self.finish(id,request).status_code,200)
+        response=self.client.get(url)
+        self.assertEqual(response.status_code,200);self.assertEqual(len(response.data["samples"]),500)
+        self.assertEqual(response.data["owner_id"],str(self.owner.pk));self.assertEqual(response["Cache-Control"],"private, no-store")
+        self.assertEqual(len(self.client.get(url+"?batch=1").data["samples"]),1)
+        for index in ["2","-1","wat","99999999999999"]:self.assertEqual(self.client.get(url+"?batch="+index).status_code,400)
+        for user,code in [(None,401),(self.regular,403),(self.other,404)]:
+            self.client.force_authenticate(user);self.assertEqual(self.client.get(url).status_code,code)

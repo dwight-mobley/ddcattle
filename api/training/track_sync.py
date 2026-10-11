@@ -143,7 +143,9 @@ def summary(track):
     return {"id": track.pk, "client_ride_uuid": str(track.client_ride_uuid), "revision": track.revision,
             "manifest_digest": track.manifest_digest, "payload_digest": track.manifest["payload_digest"],
             "state": "COMPLETE" if track.completed_at else "UPLOADING", "visibility": "PRIVATE_TEST",
-            "title": track.manifest["title"], "kind": track.manifest["kind"]}
+            "title": track.manifest["title"], "kind": track.manifest["kind"],
+            "owner_id": str(track.owner_id), "completed_at": track.completed_at,
+            **{key: track.manifest[key] for key in ["started_at_ms", "ended_at_ms", "active_ms", "moving_ms", "distance_m", "gain_m", "loss_m", "expected_samples"]}}
 
 class RecordedTrackViewSet(viewsets.GenericViewSet):
     permission_classes = [PrivateSyncPermission]
@@ -189,6 +191,20 @@ class RecordedTrackViewSet(viewsets.GenericViewSet):
         result["manifest"] = track.manifest
         result["received_batches"] = list(track.batches.values_list("index", flat=True))
         return Response(result)
+
+    @action(detail=True, methods=["get"])
+    def samples(self, request, pk=None):
+        track = self.get_object()
+        if not track.completed_at:
+            raise ValidationError("Only completed private tracks can be viewed on a map.")
+        index = serializers.IntegerField(min_value=0, max_value=39).run_validation(request.query_params.get("batch", 0))
+        if index >= len(track.manifest["batch_digests"]):
+            raise ValidationError("Batch index out of range.")
+        batch = track.batches.filter(index=index).first()
+        if not batch or digest(batch.payload) != track.manifest["batch_digests"][index]:
+            raise Conflict("Stored batch is missing or damaged; ask the administrator to review.")
+        return Response({"index": index, "owner_id": str(track.owner_id), "track_id": track.pk,
+                         "samples": json.loads(batch.payload), "total_batches": len(track.manifest["batch_digests"])})
 
     def create(self, request):
         if not isinstance(request.data, dict) or set(request.data) != {"manifest", "digest"}:
