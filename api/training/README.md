@@ -80,3 +80,11 @@ The implementation now lives in the existing WSL Django repository. The design s
 - On a staging/local copy, run python manage.py migrate --plan, then python manage.py migrate and python manage.py check. Production migrations were not run. Database verification was performed exclusively with training.test_settings (fresh SQLite, memory storage, local email/cache), never DATABASE_URL.
 - Run python manage.py test training --settings=training.test_settings. Review object deletion separately in admin: DRF blocks deletion of records that still have media/linked sessions; the trusted staff admin follows normal Django behavior. Prefer preserving historical records.
 - Incremental limitations: rubric configuration is versioned in code rather than an editable database rubric builder; context aggregation, per-category summaries, location sharing across accounts, and multi-animal gallery attribution can be added later. No automatic prose extraction, import command, front-end changes or production import were added.
+
+
+## Private Android testing tracks
+
+Staff-only private sync is implemented separately from horse activities. It is disabled by default,
+not deployed by this change, and creates no public/timeline/marketplace entries. See
+[PRIVATE_TRACK_SYNC.md](PRIVATE_TRACK_SYNC.md) for protocol, privacy boundaries, validation evidence
+and disposable test-server setup.

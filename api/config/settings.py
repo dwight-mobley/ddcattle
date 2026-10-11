@@ -237,3 +237,7 @@ AUTH_USER_MODEL = "accounts.User"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+# Private Android test sync is opt-in. No public track endpoint or publication workflow.
+RIDE_SYNC_ENABLED = os.getenv("RIDE_SYNC_ENABLED", "False") == "True"

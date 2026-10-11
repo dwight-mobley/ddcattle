@@ -183,3 +183,32 @@ class RideSkillProgress(Record):
             raise ValidationError({"evidence": "Describe what this horse demonstrated."})
         if self.ride_id and not self.ride.participants.filter(animal_id=self.animal_id).exists():
             raise ValidationError({"animal": "Choose a horse on this ride."})
+
+
+class RecordedTrack(models.Model):
+    """Private testing uploads. Deliberately unrelated to public/horse activity models."""
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="private_recorded_tracks")
+    client_ride_uuid = models.UUIDField()
+    revision = models.PositiveIntegerField(default=1)
+    manifest = models.JSONField()
+    manifest_digest = models.CharField(max_length=64)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at", "-pk"]
+        constraints = [models.UniqueConstraint(fields=["owner", "client_ride_uuid", "revision"], name="unique_private_track_revision")]
+
+    def __str__(self):
+        return self.manifest.get("title") or str(self.client_ride_uuid)
+
+
+class RecordedTrackBatch(models.Model):
+    track = models.ForeignKey(RecordedTrack, on_delete=models.CASCADE, related_name="batches")
+    index = models.PositiveIntegerField()
+    digest = models.CharField(max_length=64)
+    payload = models.TextField()  # Exact UTF-8 JSON hashed by the client; immutable after acknowledgement.
+
+    class Meta:
+        ordering = ["index"]
+        constraints = [models.UniqueConstraint(fields=["track", "index"], name="unique_private_track_batch")]

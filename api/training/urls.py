@@ -7,4 +7,6 @@ router.register("rides", RideViewSet, basename="ride")
 router.register("sessions", TrainingSessionViewSet, basename="training-session")
 router.register("skills", TrainingSkillViewSet, basename="training-skill")
 router.register("progress", SessionSkillProgressViewSet, basename="session-skill-progress")
+from .track_sync import RecordedTrackViewSet
+router.register("recorded-tracks", RecordedTrackViewSet, basename="recorded-track")
 urlpatterns = router.urls
